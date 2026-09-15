@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_shared_announcement_messages",
+  "info": {
+    "displayName": "Повідомлення",
+    "icon": "bell",
+    "description": "Одне повідомлення у смузі оголошень угорі сайту."
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "Текст повідомлення, напр. «Get 15% off with code LUMEAFIRST15»."
+    },
+    "order": {
+      "type": "integer",
+      "default": 0,
+      "description": "Порядок показу. Менше число — показується раніше."
+    }
+  }
+}

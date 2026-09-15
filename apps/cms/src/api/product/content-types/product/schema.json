@@ -1,0 +1,107 @@
+{
+  "kind": "collectionType",
+  "collectionName": "products",
+  "info": {
+    "singularName": "product",
+    "pluralName": "products",
+    "displayName": "Товар",
+    "description": "Товар каталогу. Ємності задаються варіацією «Size» — кожна зі своєю ціною та знижкою."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "description": "Назва товару без ємності, напр. «Daily Moisturiser». Ємність додається окремо у варіації."
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "description": "Фото товару на картці."
+    },
+    "priceMode": {
+      "type": "enumeration",
+      "enum": [
+        "single",
+        "byVariation"
+      ],
+      "default": "single",
+      "required": true,
+      "description": "«single» — одна ціна на весь товар. «byVariation» — ціна залежить від ємності чи іншої варіації, і задається всередині кожного значення."
+    },
+    "price": {
+      "type": "decimal",
+      "description": "Ціна товару. Заповнюється лише коли тип ціни — «Одна ціна на весь товар».",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "priceMode"
+            },
+            "single"
+          ]
+        }
+      }
+    },
+    "discountPercent": {
+      "type": "integer",
+      "min": 0,
+      "max": 100,
+      "description": "Знижка на весь товар, у відсотках. Має пріоритет над полем нижче. Залиште порожнім, якщо знижки немає.",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "priceMode"
+            },
+            "single"
+          ]
+        }
+      }
+    },
+    "discountedPrice": {
+      "type": "decimal",
+      "description": "Замість відсотка: кінцева ціна зі знижкою — відсоток порахується автоматично. Заповнюйте або це поле, або відсоток, не обидва.",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "priceMode"
+            },
+            "single"
+          ]
+        }
+      }
+    },
+    "stock": {
+      "type": "integer",
+      "min": 0,
+      "description": "Скільки одиниць на складі. Заповнюйте, коли товар продається без варіацій — якщо варіації є, залишок ведеться на кожному варіанті окремо. Порожнє поле — облік не ведеться, товар завжди доступний; 0 — немає в наявності."
+    },
+    "badges": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::badge.badge",
+      "mappedBy": "products",
+      "description": "Мітки на картці: Sale, New, Bestseller тощо. Створюються у розділі «Мітки». Залиште порожнім, якщо міток немає."
+    },
+    "variations": {
+      "type": "component",
+      "repeatable": true,
+      "component": "product.variation",
+      "description": "Групи варіантів: «Size» з ємностями 30/50/100 ml, «Skin type» з Dry/Normal/Sensitive тощо. Кожне значення може мати власну ціну та знижку."
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "products",
+      "description": "Один товар може належати до кількох категорій."
+    }
+  }
+}

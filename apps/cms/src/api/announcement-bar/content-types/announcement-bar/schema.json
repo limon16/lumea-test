@@ -1,0 +1,19 @@
+{
+  "kind": "singleType",
+  "collectionName": "announcement_bars",
+  "info": {
+    "singularName": "announcement-bar",
+    "pluralName": "announcement-bars",
+    "displayName": "Смуга оголошень",
+    "description": "Повідомлення у верхній смузі сайту. Змінюються автоматично одне за одним по колу."
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "messages": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.announcement-message",
+      "description": "Список повідомлень. Порядок задається полем «Порядок» усередині кожного."
+    }
+  }
+}

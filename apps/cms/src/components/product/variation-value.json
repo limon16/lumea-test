@@ -1,0 +1,45 @@
+{
+  "collectionName": "components_product_variation_values",
+  "info": {
+    "displayName": "Значення варіації",
+    "icon": "tag",
+    "description": "Один варіант групи, напр. «Dry» у групі «Skin type». Якщо цей варіант існує лише в певних ємностях — додайте їх у «Вкладені варіанти» нижче."
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "description": "Показується на картці товару, напр. «50 ml», «Dry», «Hyaluronic Acid 2%»."
+    },
+    "priceOverride": {
+      "type": "decimal",
+      "description": "Ціна цього варіанта. Не заповнюйте, якщо ціну задають вкладені варіанти нижче."
+    },
+    "discountPercent": {
+      "type": "integer",
+      "min": 0,
+      "max": 100,
+      "description": "Знижка на ЦЕЙ варіант, у відсотках. Має пріоритет над полем нижче."
+    },
+    "discountedPrice": {
+      "type": "decimal",
+      "description": "Замість відсотка: кінцева ціна зі знижкою — відсоток порахується автоматично."
+    },
+    "subLabel": {
+      "type": "string",
+      "description": "Назва вкладеної групи, напр. «Size». Заповніть, якщо цей варіант має власний список ємностей."
+    },
+    "subValues": {
+      "type": "component",
+      "repeatable": true,
+      "component": "product.sub-value",
+      "description": "Ємності чи інші варіанти, доступні ТІЛЬКИ для цього значення. Напр. «Dry» має лише 40 ml, а «Normal» — 50 і 100 ml."
+    },
+    "stock": {
+      "type": "integer",
+      "min": 0,
+      "description": "Скільки одиниць цього варіанта на складі. Не заповнюйте, якщо у варіанта є вкладені варіанти — тоді залишок ведеться на кожному з них окремо. Порожнє поле — облік не ведеться; 0 — немає в наявності."
+    }
+  }
+}

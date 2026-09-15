@@ -1,0 +1,15 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+  better-sqlite3: true
+  unrs-resolver: true
+  core-js-pure: true
+
+overrides:
+  '@types/react': 19.2.18
+  '@types/react-dom': 19.2.7

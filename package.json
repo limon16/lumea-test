@@ -1,0 +1,19 @@
+{
+  "name": "lumea-test",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.0.9",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "docker compose up -d && pnpm run \"/^dev:(web|cms)$/\"",
+    "dev:web": "pnpm --filter web dev",
+    "dev:cms": "pnpm --filter cms develop",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "stop": "docker compose down"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "badges",
+  "info": {
+    "singularName": "badge",
+    "pluralName": "badges",
+    "displayName": "Мітка",
+    "description": "Мітки на картці товару: Sale, New, Bestseller або будь-які власні. Створюйте скільки потрібно — код змінювати не треба."
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "description": "Текст мітки, який побачить покупець на картці, напр. «Sale», «New», «Bestseller», «Limited»."
+    },
+    "order": {
+      "type": "integer",
+      "default": 0,
+      "description": "Порядок сортування, якщо на товарі кілька міток. Менше число — вище у списку."
+    },
+    "products": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::product.product",
+      "inversedBy": "badges"
+    }
+  }
+}

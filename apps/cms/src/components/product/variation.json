@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_product_variations",
+  "info": {
+    "displayName": "Варіація",
+    "icon": "bulletList",
+    "description": "Група варіантів товару: «Size» з ємностями 30/50/100 ml, «Skin type» з Dry/Normal/Sensitive. Додайте скільки груп потрібно, або жодної."
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "description": "Назва групи над варіантами, напр. «Size», «Skin type», «Choose formula»."
+    },
+    "values": {
+      "type": "component",
+      "repeatable": true,
+      "component": "product.variation-value",
+      "description": "Варіанти на вибір. Кожен може мати власну ціну та знижку — так один товар покриває кілька ємностей без дублювання."
+    }
+  }
+}

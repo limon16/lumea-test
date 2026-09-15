@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.env
+.env.local
+.DS_Store
+dist/
+build/
+.strapi/
+.tmp/
+.superpowers/
+apps/web/AGENTS.md
+apps/web/CLAUDE.md
+.idea/
+.claude/launch.json
