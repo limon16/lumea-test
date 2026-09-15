@@ -1,3 +1,4 @@
+import { optionKeys } from '@/components/ui/optionKeys';
 import { subKey, type Variation } from '@lumea/types';
 
 interface Props {
@@ -29,7 +30,7 @@ export function VariationGroup({ variation, selected, onSelect }: Props) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div role="radiogroup" aria-label={variation.label} className="flex flex-col gap-1">
+      <div role="radiogroup" onKeyDown={optionKeys} aria-label={variation.label} className="flex flex-col gap-1">
         <span className="text-[14px]/[1] font-bold text-(--color-muted)">
           {variation.label}:
         </span>
@@ -50,7 +51,7 @@ export function VariationGroup({ variation, selected, onSelect }: Props) {
 
       {activeValue !== undefined && activeValue.subValues.length > 0 && (
         <div
-          role="radiogroup"
+          role="radiogroup" onKeyDown={optionKeys}
           aria-label={activeValue.subLabel ?? `${activeValue.label} options`}
           className="flex flex-col gap-1"
         >
@@ -112,12 +113,13 @@ function Chip({
       type="button"
       role="radio"
       aria-checked={isSelected}
+      tabIndex={isSelected ? 0 : -1}
       onClick={onClick}
       style={{
         zIndex: depth,
-        ...(wide ? { boxShadow: CHIP_SHADOW, letterSpacing: '-2%' } : {}),
+        ...(wide ? { boxShadow: CHIP_SHADOW, letterSpacing: '-0.02em' } : {}),
       }}
-      className={`relative flex h-10 items-center gap-1 rounded-(--radius-sm)
+      className={`relative flex min-h-10 items-center gap-1 rounded-(--radius-sm)
                   border border-[#bfbfbf] text-[14px]/[1] font-bold
                   transition-colors focus-visible:outline-2
                   focus-visible:outline-offset-2
@@ -137,7 +139,7 @@ function Chip({
                      bg-(--color-ink) text-[14px]/[1] font-bold
                      text-(--color-paper)"
           style={{
-            letterSpacing: '-2%',
+            letterSpacing: '-0.02em',
             transform: 'translateX(-10%) rotate(-3deg)',
           }}
         >

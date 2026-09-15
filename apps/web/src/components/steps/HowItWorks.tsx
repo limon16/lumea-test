@@ -1,10 +1,12 @@
 'use client';
 
-import { useRef, useState, type CSSProperties } from 'react';
+import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+import { usePagedCatalog } from '@/components/products/usePagedCatalog';
+import type { CatalogPage } from '@/lib/catalog';
 import type { Category, Product } from '@lumea/types';
 
 import { StarIcon } from '@/components/header/icons';
@@ -21,8 +23,8 @@ import { StepCard } from './StepCard';
 import { STEPS } from './stepsData';
 
 interface Props {
-  products: Product[];
-  categories: Category[];
+  initialProducts: CatalogPage<Product>;
+  initialCategories: CatalogPage<Category>;
 }
 
 const STACK_TOP_MOBILE = 16;
@@ -43,12 +45,23 @@ function cardPosition(index: number, active: number): number {
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-export function HowItWorks({ products, categories }: Props) {
+export function HowItWorks({ initialProducts, initialCategories }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetStep, setSheetStep] = useState(0);
-  const [categoryId, setCategoryId] = useState(() =>
-    initialCategoryId(categories));
+  const [categoryId, setCategoryId] = useState(initialCategoryId(initialCategories.items));
+  const categoryPage = usePagedCatalog<Category>('/api/catalog?kind=categories', initialCategories);
+  const categories = categoryPage.items;
+  const initialUrl = `/api/catalog?kind=products${initialCategories.items[0] ? `&category=${initialCategories.items[0].id}` : ''}`;
+  const productPage = usePagedCatalog<Product>(`/api/catalog?kind=products${categoryId ? `&category=${categoryId}` : ''}`, initialProducts, initialUrl);
+  const products = productPage.items;
+  const productPagination = { hasMore: productPage.hasMore, loading: productPage.loading, error: productPage.error, onLoadMore: productPage.loadMore };
+  const categoryPagination = { hasMore: categoryPage.hasMore, loading: categoryPage.loading, error: categoryPage.error, onLoadMore: categoryPage.loadMore };
+  useEffect(() => {
+    if (categoryId === 0 && categories[0]) setCategoryId(categories[0].id);
+  }, [categoryId, categories]);
+  const anchorRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const panelRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLLIElement | null)[]>([]);
   const trackRef = useRef<HTMLDivElement>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
@@ -66,8 +79,8 @@ export function HowItWorks({ products, categories }: Props) {
       setActiveIndex(index);
     };
 
-    mm.add({ desktop: DESKTOP_QUERY, mobile: '(width < 1024px)' }, (context) => {
-      if (!context.conditions?.desktop) {
+    mm.add({ desktop: DESKTOP_QUERY, mobile: '(width < 1024px)', reduce: '(prefers-reduced-motion: reduce)' }, (context) => {
+      if (!context.conditions?.desktop || context.conditions.reduce) {
         const line = stackLine(cards.length, STACK_TOP_MOBILE, STACK_STEP);
         const syncActive = () => activate(pickActiveStep(
           cards.map((card) => card.getBoundingClientRect().top), line,
@@ -82,58 +95,58 @@ export function HowItWorks({ products, categories }: Props) {
         syncActive();
         return;
       }
-      // CSS owns the transform from the first render. GSAP only updates its
-      // offset, without replacing or decomposing the initial CSS transform.
-      const timeline = gsap.timeline({ paused: true });
-      for (let active = 1; active < STEPS.length; active += 1) {
-        timeline.fromTo(cards, {
-          '--card-y': (index: number) => `${cardPosition(index, active - 1)}px`,
-        }, {
-          '--card-y': (index: number) => `${cardPosition(index, active)}px`,
-          duration: 1,
-          ease: 'none',
-          immediateRender: false,
-        });
-      }
+      // Product height only reserves document space. It must never change
+      // the sticky top or the positions of cards that have already arrived.
+      const measurePanel = () => {
+        const height = Math.max(PANEL_H, Math.ceil(panelRef.current?.getBoundingClientRect().height ?? PANEL_H));
+        track.style.setProperty('--panel-height', `${height}px`);
+      };
+      measurePanel();
 
-      const syncActive = (progress: number) => {
-        // Switch the active content when the incoming card reaches its stack position.
-        activate(Math.min(
-          Math.floor(progress * (STEPS.length - 1) + 0.00001), STEPS.length - 1,
-        ));
+      // Derive every position from one progress value. Chained fromTo tweens
+      // on the same CSS property can overwrite each other's initial values
+      // during refresh; no tween initialization is needed here.
+      const renderProgress = (progress: number) => {
+        const step = Math.max(0, Math.min(1, progress)) * (STEPS.length - 1);
+        const from = Math.min(Math.floor(step), STEPS.length - 1);
+        const to = Math.min(from + 1, STEPS.length - 1);
+        const fraction = step - from;
+        cards.forEach((card, index) => {
+          const start = cardPosition(index, from);
+          const end = cardPosition(index, to);
+          card.style.setProperty('--card-y', `${start + (end - start) * fraction}px`);
+        });
+        activate(Math.min(Math.floor(step + 0.00001), STEPS.length - 1));
       };
       const trigger = ScrollTrigger.create({
         trigger: track,
         start: `top ${STICKY_TOP}px`,
         end: `+=${SCROLL_DISTANCE}`,
-        animation: timeline,
-        scrub: true,
-        onUpdate: (self) => syncActive(self.progress),
-        onRefresh: (self) => syncActive(self.progress),
+        onUpdate: (self) => renderProgress(self.progress),
+        onRefresh: (self) => renderProgress(self.progress),
       });
       scrollTriggerRef.current = trigger;
 
-      // Apply the current scroll position during layout initialization;
-      // never hide the content while waiting for load events or fonts.
       const syncRestoredScroll = () => {
         trigger.refresh();
         trigger.update();
-        timeline.progress(trigger.progress);
-        syncActive(trigger.progress);
+        renderProgress(trigger.progress);
       };
       syncRestoredScroll();
-
-      // The browser can restore history scroll after pageshow is dispatched.
       let frame = 0;
       const onPageShow = () => {
         window.cancelAnimationFrame(frame);
         frame = window.requestAnimationFrame(syncRestoredScroll);
       };
       window.addEventListener('pageshow', onPageShow);
+      const observer = new ResizeObserver(measurePanel);
+      if (panelRef.current) observer.observe(panelRef.current);
 
       return () => {
+        observer.disconnect();
         window.cancelAnimationFrame(frame);
         window.removeEventListener('pageshow', onPageShow);
+        cards.forEach((card) => card.style.removeProperty('--card-y'));
         scrollTriggerRef.current = null;
       };
     });
@@ -156,15 +169,15 @@ export function HowItWorks({ products, categories }: Props) {
     if (trigger !== null && window.matchMedia(DESKTOP_QUERY).matches) {
       const top = trigger.start
         + (trigger.end - trigger.start) * index / (STEPS.length - 1);
-      window.scrollTo({ top, behavior: 'smooth' });
+      window.scrollTo({ top, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
       return;
     }
 
-    const node = cardRefs.current[index];
+    const node = anchorRefs.current[index];
     if (node === null || node === undefined) return;
     const top = node.getBoundingClientRect().top + window.scrollY
-      - STACK_TOP_MOBILE;
-    window.scrollTo({ top, behavior: 'smooth' });
+      - STACK_TOP_MOBILE - index * STACK_STEP;
+    window.scrollTo({ top, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     setActiveIndex(index);
   };
 
@@ -198,27 +211,31 @@ export function HowItWorks({ products, categories }: Props) {
 
       <div
         ref={trackRef}
-        className="relative lg:h-(--track-height) [overflow-anchor:none]"
+        className="steps-track relative lg:h-(--track-height) [overflow-anchor:none]"
         style={{
-          '--track-height': `${PANEL_H + SCROLL_DISTANCE}px`,
+          '--panel-height': `${PANEL_H}px`,
+          '--track-height': `calc(var(--panel-height) + ${SCROLL_DISTANCE}px)`,
+          '--sticky-top': `${STICKY_TOP}px`,
         } as CSSProperties}
       >
-        <div className="flex flex-col gap-10 lg:sticky lg:top-10 lg:h-[754px] lg:flex-row
+        <div className="steps-stage flex flex-col gap-10 lg:sticky lg:top-(--sticky-top) lg:min-h-(--panel-height) lg:flex-row
                         lg:items-start lg:gap-10">
-          <ol className="relative flex w-full list-none flex-col
-                         lg:h-[754px] lg:w-[500px] lg:shrink-0
+          <ol className="steps-list relative flex w-full list-none flex-col
+                         lg:h-(--panel-height) lg:w-[500px] lg:shrink-0
                          lg:overflow-clip lg:[overflow-clip-margin:96px]">
             {STEPS.map((step, index) => (
+              <Fragment key={step.number}>
+                <li aria-hidden="true" ref={(node) => { anchorRefs.current[index] = node; }} className="step-anchor h-0 lg:hidden" />
                 <li
                   key={step.number}
                   ref={(node) => {
                     cardRefs.current[index] = node;
                   }}
-                  className="sticky top-(--stack-top) lg:absolute lg:inset-x-0 lg:top-0 lg:h-(--card-height) lg:[transform:translateY(var(--card-y))]"
+                  className="step-card-row sticky top-(--stack-top) lg:absolute lg:inset-x-0 lg:top-0 lg:h-(--card-height)"
                   style={{
                     '--stack-top': `${STACK_TOP_MOBILE + index * STACK_STEP}px`,
                     '--card-height': `${CARD_H}px`,
-                    '--card-y': `${cardPosition(index, 0)}px`,
+                    '--initial-y': `${cardPosition(index, 0)}px`,
                     zIndex: index,
                   } as CSSProperties}
                 >
@@ -231,15 +248,18 @@ export function HowItWorks({ products, categories }: Props) {
                     />
                   </div>
                 </li>
+              </Fragment>
             ))}
           </ol>
 
-          <div className="hidden min-w-0 flex-1 lg:block lg:h-[754px]">
+          <div ref={panelRef} className="hidden min-w-0 flex-1 lg:block">
             <ProductsPanel
               products={products}
               categories={categories}
               activeId={categoryId}
               onSelect={setCategoryId}
+              productPagination={productPagination}
+              categoryPagination={categoryPagination}
             />
           </div>
         </div>
@@ -251,6 +271,8 @@ export function HowItWorks({ products, categories }: Props) {
         title={sheetTitle(STEPS, sheetStep)}
         products={products}
         categories={categories}
+        productPagination={productPagination}
+        categoryPagination={categoryPagination}
         activeCategoryId={categoryId}
         onCategoryChange={setCategoryId}
         steps={STEPS}

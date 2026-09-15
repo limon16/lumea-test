@@ -32,15 +32,6 @@ export function HeartIcon({ className }: IconProps) {
   );
 }
 
-export function UserIcon({ className }: IconProps) {
-  return (
-    <svg {...commonProps} className={className}>
-      <circle cx="11" cy="7" r="3.75" />
-      <path d="M3.5 19c1.2-3.7 4.4-5.75 7.5-5.75S17.8 15.3 19 19" />
-    </svg>
-  );
-}
-
 export function CartIcon({ className }: IconProps) {
   return (
     <svg {...commonProps} className={className}>
@@ -58,15 +49,6 @@ export function BurgerIcon({ className }: IconProps) {
       <path d="M3.4375 11H18.5625" />
       <path d="M3.4375 5.5H18.5625" />
       <path d="M3.4375 16.5H18.5625" />
-    </svg>
-  );
-}
-
-export function CloseIcon({ className }: IconProps) {
-  return (
-    <svg {...commonProps} strokeWidth={1.5} className={className}>
-      <path d="M4.5 4.5l13 13" />
-      <path d="M17.5 4.5l-13 13" />
     </svg>
   );
 }

@@ -555,7 +555,13 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    discountedPrice: Schema.Attribute.Decimal;
+    discountedPrice: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     discountPercent: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -572,7 +578,13 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    price: Schema.Attribute.Decimal;
+    price: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     priceMode: Schema.Attribute.Enumeration<['single', 'byVariation']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'single'>;

@@ -1,6 +1,10 @@
+'use client';
+
+import { LoadMore, type LoadMoreProps } from './LoadMore';
+
 import type { Category } from '@lumea/types';
 
-interface Props {
+interface Props extends LoadMoreProps {
   categories: Category[];
   activeId: number;
   onSelect: (id: number) => void;
@@ -15,15 +19,15 @@ const MENU_SHADOW = [
   '-12px -8px 16px 0px #9AADA729',
 ].join(', ');
 
-export function CategoryTabs({ categories, activeId, onSelect }: Props) {
+export function CategoryTabs({ categories, activeId, onSelect, ...pagination }: Props) {
   return (
-    <div
+    <div data-scroll-root
       className="relative -my-10 -ml-10 w-[calc(100%+40px)] shrink-0 overflow-x-auto
                  p-10 scroll-px-10 overscroll-x-contain
                  [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       <div
-        role="tablist"
+        role="group"
         aria-label="Product categories"
         className="flex w-fit items-center gap-6 rounded-(--radius-pill-lg)
                    bg-(--color-paper) p-1"
@@ -36,8 +40,7 @@ export function CategoryTabs({ categories, activeId, onSelect }: Props) {
             <button
               key={category.id}
               type="button"
-              role="tab"
-              aria-selected={isActive}
+              aria-pressed={isActive}
               onClick={() => onSelect(category.id)}
               className={`flex h-[68px] shrink-0 items-center whitespace-nowrap
                           rounded-(--radius-pill-lg) px-8 text-[18px]/[1.1]
@@ -48,13 +51,14 @@ export function CategoryTabs({ categories, activeId, onSelect }: Props) {
                             ? 'bg-(--color-ink) text-[#fcfcfc]'
                             : 'text-(--color-ink) hover:text-(--color-muted)'}`}
               style={isActive
-                ? { letterSpacing: '-2%', boxShadow: MENU_SHADOW }
+                ? { letterSpacing: '-0.02em', boxShadow: MENU_SHADOW }
                 : undefined}
             >
               {category.name}
             </button>
           );
         })}
+        <LoadMore {...pagination} />
       </div>
     </div>
   );

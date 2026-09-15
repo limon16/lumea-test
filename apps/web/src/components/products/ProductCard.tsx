@@ -12,10 +12,13 @@ import { ArrowUpRight } from '@/components/ui/ArrowUpRight';
 import { Button } from '@/components/ui/Button';
 import { PriceBlock } from './PriceBlock';
 import { VariationGroup } from './VariationGroup';
+import { useShop } from './shopContext';
 import { initialSelection } from './initialSelection';
 
 interface Props {
   product: Product;
+  initialSelected?: Record<string, string>;
+  details?: boolean;
 }
 
 const LOW_STOCK = 5;
@@ -29,11 +32,13 @@ const CARD_SHADOW = [
   '-12px -8px 16px 0px #9AADA729',
 ].join(', ');
 
-export function ProductCard({ product }: Props) {
+export function ProductCard({ product, initialSelected, details = false }: Props) {
   const [selected, setSelected] = useState<Record<string, string>>(() =>
-    initialSelection(product.variations),
+    initialSelected ?? initialSelection(product.variations),
   );
 
+  const shop = useShop();
+  const saved = shop.wishlist.some((item) => item.id === product.id);
   const sizeLabel = pickSizeLabel(product, selected);
   const title = sizeLabel === null
     ? product.name
@@ -45,8 +50,8 @@ export function ProductCard({ product }: Props) {
 
   return (
     <article
-      className="flex h-full max-h-[632px] w-[264px] shrink-0 flex-col gap-4
-                 rounded-(--radius-md) bg-(--color-paper) p-2"
+      className="flex h-full min-h-[632px] w-[264px] shrink-0 flex-col gap-4
+                 rounded-(--radius-md) bg-(--color-paper) p-2 break-words"
       style={{ boxShadow: CARD_SHADOW }}
     >
       <div className="relative h-[248px] w-full shrink-0 overflow-hidden
@@ -88,19 +93,21 @@ export function ProductCard({ product }: Props) {
 
         <button
           type="button"
-          aria-label="Add to wishlist"
+          aria-label={saved ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-pressed={saved}
+          onClick={() => shop.toggleWishlist(product)}
           className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center
                      rounded-(--radius-pill-lg) bg-(--color-surface) transition-colors
                      hover:bg-(--color-border) focus-visible:outline-2
                      focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
         >
-          <HeartIcon className="h-8 w-8 text-(--color-ink)" />
+          <HeartIcon className={`h-8 w-8 ${saved ? 'fill-(--color-accent) text-(--color-accent)' : 'text-(--color-ink)'}`} />
         </button>
       </div>
 
       <div className="flex flex-1 flex-col justify-between gap-2 pb-1">
         <div className="flex flex-col gap-3">
-          <h4 className="flex h-11 items-start text-[18px]/[1.2] font-bold
+          <h4 className="flex min-h-11 items-start text-[18px]/[1.2] font-bold
                          text-(--color-ink)">
             {title}
           </h4>
@@ -127,6 +134,7 @@ export function ProductCard({ product }: Props) {
           <div className="flex flex-col gap-1.5">
             <Button
               variant="card"
+              onClick={() => shop.addToBag(product, selected)}
               disabled={!available}
               className="justify-start disabled:cursor-not-allowed
                          disabled:bg-(--color-border)
@@ -135,8 +143,8 @@ export function ProductCard({ product }: Props) {
               {available ? 'Add to bag' : 'Out of stock'}
               <ArrowUpRight className="size-5" />
             </Button>
-            <Button variant="cardGhost" className="justify-start">
-              View details
+            <Button variant="cardGhost" className="justify-start" onClick={() => details ? shop.show('cart') : shop.show({ product, selected })}>
+              {details ? 'View bag' : 'View details'}
             </Button>
           </div>
         </div>

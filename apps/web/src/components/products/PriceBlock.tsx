@@ -13,7 +13,7 @@ export function PriceBlock({ price }: Props) {
       {price.hasDiscount && (
         <span
           className="text-[14px]/[1] font-bold text-(--color-muted) line-through"
-          style={{ letterSpacing: '-2%' }}
+          style={{ letterSpacing: '-0.02em' }}
         >
           {formatPrice(price.base)}
         </span>

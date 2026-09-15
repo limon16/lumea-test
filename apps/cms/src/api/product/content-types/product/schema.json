@@ -46,7 +46,8 @@
             "single"
           ]
         }
-      }
+      },
+      "min": 0
     },
     "discountPercent": {
       "type": "integer",
@@ -76,7 +77,8 @@
             "single"
           ]
         }
-      }
+      },
+      "min": 0
     },
     "stock": {
       "type": "integer",

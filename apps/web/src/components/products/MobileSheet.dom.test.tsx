@@ -1,9 +1,14 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render as renderUI, screen } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import type { Category, Product } from '@lumea/types';
 
+import type { ReactElement } from 'react';
+import { ShopProvider } from './ShopProvider';
+
 import { MobileSheet } from './MobileSheet';
+
+const render = (ui: ReactElement) => renderUI(ui, { wrapper: ShopProvider });
 
 /**
  * jsdom implements <dialog> only partially: showModal/close exist but do not
@@ -11,6 +16,7 @@ import { MobileSheet } from './MobileSheet';
  * attribute keeps the component's own logic under test rather than jsdom's.
  */
 beforeAll(() => {
+  vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} });
   const proto = window.HTMLDialogElement.prototype;
   proto.showModal = function showModal(this: HTMLDialogElement) {
     this.open = true;
@@ -143,12 +149,21 @@ describe('MobileSheet', () => {
   });
 
   it('explains an unreachable catalogue instead of an empty category', () => {
-    renderSheet({ products: [], categories: [] });
-    expect(screen.getByText(/unavailable right now/i)).toBeDefined();
+    const onRetry = vi.fn();
+    renderSheet({
+      products: [],
+      categories: [],
+      categoryPagination: { error: 'Catalogue unavailable', onLoadMore: onRetry },
+    });
+    expect(screen.getByRole('heading', { name: 'A little pause in your routine' })).toBeDefined();
+    expect(screen.queryByRole('heading', { name: 'No products here yet' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(onRetry).toHaveBeenCalledOnce();
   });
 
   it('says a category is empty when other products do exist', () => {
     renderSheet({ activeCategoryId: 99 });
-    expect(screen.getByText(/No products in this category/i)).toBeDefined();
+    expect(screen.getByRole('heading', { name: 'No products here yet' })).toBeDefined();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
   });
 });

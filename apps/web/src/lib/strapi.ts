@@ -1,3 +1,4 @@
+import { emptyPage, type CatalogPage } from './catalog';
 import {
   normalizeCategories, normalizeProducts,
   type Category, type Product,
@@ -7,7 +8,7 @@ const BASE = process.env.NEXT_PUBLIC_STRAPI_URL ?? 'http://127.0.0.1:1337';
 
 async function fetchJson(path: string): Promise<unknown | null> {
   try {
-    const res = await fetch(`${BASE}/api${path}`, { cache: 'no-store' });
+    const res = await fetch(`${process.env.STRAPI_URL ?? BASE}/api${path}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -15,16 +16,27 @@ async function fetchJson(path: string): Promise<unknown | null> {
   }
 }
 
-export async function getProducts(): Promise<Product[]> {
-  const json = await fetchJson('/products?populate[image]=true'
-    + '&populate[badges]=true&populate[categories]=true'
-    + '&populate[variations][populate][values][populate][subValues]=true');
-  return normalizeProducts(json);
+export async function getProductPage(page = 1, categoryId?: number, search = ''): Promise<CatalogPage<Product>> {
+  const params = new URLSearchParams({
+    'pagination[page]': String(page), 'pagination[pageSize]': '12',
+    'sort[0]': 'id:asc', 'populate[image]': 'true',
+    'populate[badges]': 'true', 'populate[categories]': 'true',
+    'populate[variations][populate][values][populate][subValues]': 'true',
+  });
+  if (categoryId !== undefined) params.set('filters[categories][id][$eq]', String(categoryId));
+  if (search.trim()) params.set('filters[name][$containsi]', search.trim());
+  return paged(await fetchJson(`/products?${params}`), normalizeProducts, page);
 }
 
-export async function getCategories(): Promise<Category[]> {
-  const json = await fetchJson('/categories?sort=order:asc');
-  return normalizeCategories(json);
+export async function getCategoryPage(page = 1): Promise<CatalogPage<Category>> {
+  return paged(await fetchJson(`/categories?sort[0]=order:asc&sort[1]=id:asc&pagination[page]=${page}&pagination[pageSize]=12`), normalizeCategories, page);
+}
+
+function paged<T>(json: unknown, normalize: (value: unknown) => T[], page: number): CatalogPage<T> {
+  if (json === null) return emptyPage('The catalogue is unavailable. Please try again.');
+  const pagination = (json as { meta?: { pagination?: { pageCount?: number; total?: number } } }).meta?.pagination;
+  const items = normalize(json);
+  return { items, page, pageCount: pagination?.pageCount ?? page, total: pagination?.total ?? items.length };
 }
 
 export async function getAnnouncements(): Promise<string[]> {

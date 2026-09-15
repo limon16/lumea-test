@@ -29,7 +29,7 @@ export function AnnouncementBar({ messages }: Props) {
                  py-[10px] text-center text-[16px]/[1.1] font-bold
                  text-(--color-paper)
                  sm:min-w-[458px] sm:max-w-[600px]"
-      style={{ letterSpacing: '0%' }}
+      style={{ letterSpacing: 0 }}
       aria-live="polite"
       aria-atomic="true"
     >

@@ -8,7 +8,13 @@ export interface ProductSubValue extends Struct.ComponentSchema {
     icon: 'tag';
   };
   attributes: {
-    discountedPrice: Schema.Attribute.Decimal;
+    discountedPrice: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     discountPercent: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -18,7 +24,13 @@ export interface ProductSubValue extends Struct.ComponentSchema {
         number
       >;
     label: Schema.Attribute.String & Schema.Attribute.Required;
-    priceOverride: Schema.Attribute.Decimal;
+    priceOverride: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     stock: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -50,7 +62,13 @@ export interface ProductVariationValue extends Struct.ComponentSchema {
     icon: 'tag';
   };
   attributes: {
-    discountedPrice: Schema.Attribute.Decimal;
+    discountedPrice: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     discountPercent: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
@@ -60,7 +78,13 @@ export interface ProductVariationValue extends Struct.ComponentSchema {
         number
       >;
     label: Schema.Attribute.String & Schema.Attribute.Required;
-    priceOverride: Schema.Attribute.Decimal;
+    priceOverride: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     stock: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {

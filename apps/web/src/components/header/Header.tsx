@@ -1,3 +1,6 @@
+'use client';
+
+import { useShop } from '@/components/products/shopContext';
 import { AnnouncementBar } from './AnnouncementBar';
 import { NavLink } from './NavLink';
 import {
@@ -10,14 +13,13 @@ interface Props {
 
 const NAV_ITEMS = ['Shop', 'Skincare', 'Sets', 'About'];
 
-const CART_COUNT = 2;
-
 const ICON_BUTTON_CLASS =
   'flex size-10 items-center justify-center rounded-full bg-(--color-paper)'
   + ' shadow-[1px_2px_4px_0px_#9CB6BA1A,2px_6px_7px_0px_#9CB6BA17,5px_14px_9px_0px_#9CB6BA0D,8px_26px_11px_0px_#9CB6BA03,-12px_-8px_16px_0px_#9AADA729]'
-  + ' text-(--color-ink) cursor-default';
+  + ' text-(--color-ink) transition-colors hover:text-(--color-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ink)';
 
 export function Header({ messages }: Props) {
+  const shop = useShop();
   return (
     <header className="relative z-20 flex flex-col gap-2 md:gap-3">
       <AnnouncementBar messages={messages} />
@@ -26,10 +28,9 @@ export function Header({ messages }: Props) {
       >
         <a
           href="#top"
-          className="hidden shrink-0 font-(family-name:--font-wordmark)
-                     text-[40px] font-bold text-(--color-ink) cursor-default
-                     md:block"
-          style={{ letterSpacing: '0%' }}
+          className="shrink-0 font-(family-name:--font-wordmark)
+                     text-[28px] md:text-[40px] font-bold text-(--color-ink) focus-visible:outline-2"
+          style={{ letterSpacing: 0 }}
         >
           LUMEA
         </a>
@@ -39,7 +40,7 @@ export function Header({ messages }: Props) {
           className="hidden md:flex md:items-center md:gap-10"
         >
           {NAV_ITEMS.map((item) => (
-            <NavLink key={item} href={`#${item.toLowerCase()}`}>
+            <NavLink key={item} href={item === 'About' ? '#hero-heading' : '#how-it-works'}>
               {item}
             </NavLink>
           ))}
@@ -49,6 +50,7 @@ export function Header({ messages }: Props) {
           <button
             type="button"
             aria-label="Menu"
+            onClick={() => shop.show('menu')}
             className={`${ICON_BUTTON_CLASS} bg-[#bcc9c5] md:hidden`}
           >
             <BurgerIcon className="size-6" />
@@ -56,6 +58,7 @@ export function Header({ messages }: Props) {
           <button
             type="button"
             aria-label="Search"
+            onClick={() => shop.show('search')}
             className={`${ICON_BUTTON_CLASS} hidden md:flex`}
           >
             <SearchIcon className="size-[22px]" />
@@ -63,13 +66,15 @@ export function Header({ messages }: Props) {
           <button
             type="button"
             aria-label="Wishlist"
+            onClick={() => shop.show('wishlist')}
             className={ICON_BUTTON_CLASS}
           >
             <HeartIcon className="size-[22px]" />
           </button>
           <button
             type="button"
-            aria-label={`Cart, ${CART_COUNT} items`}
+            aria-label={`Cart, ${shop.count} items`}
+            onClick={() => shop.show('cart')}
             className={`${ICON_BUTTON_CLASS} relative size-11 md:size-10`}
           >
             <CartIcon className="size-[22px]" />
@@ -80,7 +85,7 @@ export function Header({ messages }: Props) {
                          bg-(--color-ink) text-[14px]/[1] font-bold
                          text-(--color-paper)"
             >
-              {CART_COUNT}
+              {shop.count}
             </span>
           </button>
         </div>

@@ -4,9 +4,10 @@ import { useEffect, useRef } from 'react';
 
 import type { Category, Product } from '@lumea/types';
 
-import { CategoryTabs } from './CategoryTabs';
+import { optionKeys } from '@/components/ui/optionKeys';
+import { CatalogContent } from './CatalogContent';
 import { filterByCategory } from './filterByCategory';
-import { ProductCard } from './ProductCard';
+import type { LoadMoreProps } from './LoadMore';
 
 interface StepOption {
   number: string;
@@ -24,6 +25,8 @@ interface Props {
   steps: readonly StepOption[];
   activeStepIndex: number;
   onStepChange: (index: number) => void;
+  productPagination?: LoadMoreProps;
+  categoryPagination?: LoadMoreProps;
 }
 
 export function MobileSheet({
@@ -37,6 +40,8 @@ export function MobileSheet({
   steps,
   activeStepIndex,
   onStepChange,
+  productPagination,
+  categoryPagination,
 }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
@@ -74,7 +79,6 @@ export function MobileSheet({
     >
       <div className="flex max-h-[90vh] flex-col gap-6 overflow-y-auto p-5 pb-8">
         <div className="flex items-start justify-between gap-4">
-          {}
           <h3 className="text-[24px]/[1.1] font-bold text-(--color-ink)">
             {title}
           </h3>
@@ -99,45 +103,14 @@ export function MobileSheet({
           </button>
         </div>
 
-        {categories.length > 0 && (
-          <CategoryTabs
-            categories={categories}
-            activeId={activeCategoryId}
-            onSelect={onCategoryChange}
-          />
-        )}
-
-        {visible.length > 0 ? (
-          <ul
-            className="flex list-none gap-3 overflow-x-auto pb-2"
-            style={{ scrollSnapType: 'x proximity' }}
-          >
-            {visible.map((product) => (
-              <li
-                key={product.id}
-                className="flex shrink-0"
-                style={{ scrollSnapAlign: 'start' }}
-              >
-                <ProductCard product={product} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="flex min-h-[200px] items-center justify-center
-                        rounded-(--radius-md) bg-(--color-surface) px-6
-                        text-center text-[16px]/[1.4] font-medium
-                        text-(--color-muted)">
-            {categories.length === 0 || products.length === 0
-              ? 'Products are unavailable right now. Please check back later.'
-              : 'No products in this category yet.'}
-          </p>
-        )}
+        <CatalogContent products={visible} categories={categories} activeId={activeCategoryId}
+          onSelect={onCategoryChange} productPagination={productPagination} categoryPagination={categoryPagination} />
 
         <div className="flex flex-col gap-4">
           <p className="text-[18px]/[1.2] font-medium text-(--color-muted)">
             Shop products for:
           </p>
-          <ul role="radiogroup" aria-label="Care step"
+          <ul role="radiogroup" onKeyDown={optionKeys} aria-label="Care step"
               className="grid list-none grid-cols-2 gap-1.5">
             {steps.map((step, index) => {
               const isActive = index === activeStepIndex;
@@ -148,6 +121,7 @@ export function MobileSheet({
                     onClick={() => onStepChange(index)}
                     role="radio"
                     aria-checked={isActive}
+                    tabIndex={isActive ? 0 : -1}
                     className={`flex h-[35px] w-full items-center justify-center
                                 gap-1.5 rounded-xl text-[14px]/[1] font-bold
                                 transition-colors focus-visible:outline-2

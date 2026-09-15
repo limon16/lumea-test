@@ -49,7 +49,7 @@ function percentOf(source: Discountable, base: number): number | null {
   }
   if (source.discountedPrice !== null && source.discountedPrice >= 0
       && base > 0 && source.discountedPrice < base) {
-    return clampPercent(Math.round((1 - source.discountedPrice / base) * 100));
+    return clampPercent((1 - source.discountedPrice / base) * 100);
   }
   return null;
 }
@@ -83,12 +83,12 @@ export function resolvePrice(
     base,
     final: Math.max(0, round2(base * (1 - percent / 100))),
     hasDiscount: true,
-    discountPercent: percent,
+    discountPercent: Math.round(percent),
   };
 }
 
 export function formatPrice(value: number): string {
-  return `£${value.toFixed(2)}`;
+  return `£${Math.round(value).toString()}`;
 }
 
 export function resolveStock(

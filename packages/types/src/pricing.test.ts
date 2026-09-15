@@ -324,7 +324,7 @@ describe('resolveStock / isInStock', () => {
 });
 
 describe('formatPrice', () => {
-  it('форматує з фунтом і двома знаками', () => {
-    expect(formatPrice(27.2)).toBe('£27.20');
+  it('форматує з фунтом без копійок', () => {
+    expect(formatPrice(27.2)).toBe('£27');
   });
 });

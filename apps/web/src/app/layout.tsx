@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { caveat, inter, manrope } from "./fonts";
 import "./globals.css";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const vercelDomain = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL?.trim()
+  || (vercelDomain ? `https://${vercelDomain}` : "http://localhost:3000");
 
 const TITLE = "LUMEA — Skincare made simple";
 const DESCRIPTION =

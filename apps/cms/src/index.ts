@@ -1,3 +1,4 @@
+import { mergeProduct, validateProduct } from './validation/product';
 import type { Core } from '@strapi/strapi';
 
 const PUBLIC_READ: { uid: string; actions: string[] }[] = [
@@ -32,7 +33,20 @@ async function grantPublicRead(strapi: Core.Strapi): Promise<void> {
 }
 
 export default {
-  register() {},
+  register({ strapi }: { strapi: Core.Strapi }) {
+    strapi.documents.use(async (context, next) => {
+      if (context.uid === 'api::product.product' && ['create', 'update'].includes(context.action)) {
+        const params = context.params as { documentId?: string; data?: unknown };
+        const previous = context.action === 'update' && params.documentId
+          ? await strapi.documents('api::product.product').findOne({
+            documentId: params.documentId,
+            populate: { variations: { populate: { values: { populate: ['subValues'] } } } },
+          }) : {};
+        validateProduct(mergeProduct(previous, params.data));
+      }
+      return next();
+    });
+  },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     await grantPublicRead(strapi);

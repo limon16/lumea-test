@@ -165,3 +165,19 @@ html {
     transition: none;
   }
 }
+
+/* Server-rendered card positions must match the scroll animation before JS. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .step-card-row {
+    transform: translateY(var(--card-y, var(--initial-y, 0px)));
+  }
+}
+
+/* Reduced motion keeps every step in document flow, without the scroll track. */
+@media (prefers-reduced-motion: reduce) {
+  .steps-track { height: auto; }
+  .steps-stage { position: static; min-height: 0; }
+  .steps-list { height: auto; overflow: visible; gap: 24px; }
+  .step-card-row { position: relative; top: auto; transform: none; }
+  .step-anchor { display: block; }
+}

@@ -17,20 +17,16 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
   return (
     <article
       aria-current={isActive ? 'step' : undefined}
-      className={`mx-auto flex w-full flex-col gap-2.5 md:max-w-[500px]
+      className={`relative mx-auto flex w-full flex-col gap-2.5 md:max-w-[500px]
                   rounded-[32px] p-6 ring-1 ring-[#63cc96]/40
                   md:p-10 ${step.background}
                   lg:h-[546px] lg:w-[500px] lg:shrink-0
                   shadow-[1px_2px_4px_0px_#9CB6BA14,-8px_12px_12px_0px_#9CB6BA17,12px_20px_16px_0px_#9CB6BA17,8px_26px_14px_0px_#9CB6BA17,-20px_40px_30px_0px_#9CB6BA0F]`}
     >
-      <button
-        type="button"
-        onClick={onSelect}
-        aria-expanded={isActive}
-        className="flex flex-col gap-8 text-left focus-visible:outline-2
-                   focus-visible:outline-offset-4
-                   focus-visible:outline-(--color-accent)"
-      >
+      <button type="button" onClick={onSelect}
+        aria-label={`Show step ${step.number}: ${step.title}`}
+        className="absolute inset-x-0 top-0 z-10 h-6 rounded-t-[32px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ink)" />
+      <div className="flex flex-col gap-8 text-left">
         <div className="flex flex-col gap-2">
           <div className="flex items-end gap-2.5">
             <span
@@ -48,7 +44,10 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
             </span>
             <h3 className="text-[34px]/[1] font-bold text-(--color-accent)
                            md:text-[50px]/[1]">
-              {step.title}
+              <button type="button" onClick={onSelect} aria-expanded={isActive}
+                className="text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-(--color-accent)">
+                {step.title}
+              </button>
             </h3>
           </div>
           <p className="font-(family-name:--font-accent) text-[26px]/[1]
@@ -61,7 +60,7 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
                       md:text-[18px]/[1.3]">
           {step.description}
         </p>
-      </button>
+      </div>
 
       <button
         type="button"
