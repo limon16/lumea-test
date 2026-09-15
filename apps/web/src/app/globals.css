@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors — extracted from Figma nodes 1:9020 (Hero), 50:3723 (steps section),
+     50:4141 (product card). Named semantically by role, not by hex value. */
+
+  /* Primary near-black with a green tint — main background / text color. */
+  --color-ink: #212721;
+
+  /* Pure white — inverse background / text. */
+  --color-paper: #ffffff;
+
+  /* Light section background. */
+  --color-surface: #f3f5f5;
+
+  /* Green accent — buttons, highlighted elements. */
+  --color-accent: #63cc96;
+
+  /* Secondary/muted text color. */
+  --color-muted: #858585;
+
+  /* Muted grey-green, used for subdued UI elements. */
+  --color-subtle: #bcc9c5;
+
+  /* Borders and dividers. */
+  --color-border: #e3e8e9;
+
+  /* Additional greys seen in the designs. */
+  --color-grey-green: #9aada7;
+  --color-grey: #bfbfbf;
+
+  /* Fonts */
+  --font-sans: var(--font-manrope);
+  /* Inter is the wordmark only; Caveat is the handwritten step headline. */
+  --font-wordmark: var(--font-inter);
+  --font-accent: var(--font-caveat);
+
+  /* Font sizes from the designs. */
+  --text-xs: 14px;
+  --text-sm: 16px;
+  --text-md: 18px;
+  --text-lg: 24px;
+  --text-xl: 28px;
+  --text-2xl: 40px;
+  --text-3xl: 125px;
+
+  /* Border radii — most frequent values from the designs. 200/100 are
+     pill-shaped buttons (fully rounded in practice). */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 30px;
+  --radius-pill: 100px;
+  --radius-pill-lg: 200px;
+
+  /* Component-specific radii called out in the plan. */
+  --radius-card: 32px;
+  --radius-media: 30px;
+
+  /* Gaps observed across the designs. */
+  --spacing-gap-1: 4px;
+  --spacing-gap-2: 6px;
+  --spacing-gap-3: 8px;
+  --spacing-gap-4: 10px;
+  --spacing-gap-5: 12px;
+  --spacing-gap-6: 16px;
+  --spacing-gap-7: 32px;
+  --spacing-gap-8: 40px;
+
+  /* Paddings observed across the designs. */
+  --spacing-pad-1: 4px;
+  --spacing-pad-2: 6px;
+  --spacing-pad-3: 8px;
+  --spacing-pad-4: 10px;
+  --spacing-pad-5: 12px;
+  --spacing-pad-6: 20px;
+  --spacing-pad-7: 24px;
+  --spacing-pad-8: 40px;
+
+  /* Component sizes from the plan. */
+  --size-step-card: 500px;
+  --size-products-panel: 740px;
+  --size-products-container: 820px;
+  --size-product-card-w: 264px;
+  --size-product-card-h: 632px;
+  --size-product-image: 150px;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Smooth scroll for logo click / back-to-card navigation. */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile products sheet: slide up on open, fade the backdrop in.
+   `allow-discrete` lets the browser animate a dialog that switches between
+   display:none and display:block, so closing is animated too rather than
+   snapping away. Motion stays on transform/opacity. */
+.sheet {
+  /* Geometry lives here rather than in utility classes: a utility layer wins
+     over plain CSS, so the open-state transform would never apply. */
+  margin: auto 0 0;
+  width: 100%;
+  max-width: none;
+  max-height: 100%;
+  padding: 0;
+  translate: 0 100%;
+  opacity: 0;
+  transition:
+    translate 320ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 320ms ease,
+    overlay 320ms allow-discrete,
+    display 320ms allow-discrete;
+}
+
+.sheet[open] {
+  translate: 0 0;
+  opacity: 1;
+}
+
+@starting-style {
+  .sheet[open] {
+    translate: 0 100%;
+    opacity: 0;
+  }
+}
+
+.sheet::backdrop {
+  opacity: 0;
+  transition:
+    opacity 320ms ease,
+    overlay 320ms allow-discrete,
+    display 320ms allow-discrete;
+}
+
+.sheet[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .sheet[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .sheet::backdrop {
+    transition: none;
+  }
+}
