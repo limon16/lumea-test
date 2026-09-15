@@ -25,8 +25,8 @@ export function ProductsPanel({
     : [];
 
   return (
-    <div className="flex min-w-0 flex-col gap-3">
-      <p className="text-[16px]/[1.2] font-bold text-(--color-ink)">
+    <div className="flex w-full min-w-0 max-w-full flex-col gap-3">
+      <p className="text-[16px]/[1.1] font-bold text-(--color-ink)">
         {activeCategory !== null ? `Shop ${activeCategory.name}` : 'Shop products'}
       </p>
 
@@ -38,11 +38,27 @@ export function ProductsPanel({
         />
       )}
 
-      <div className="min-w-0 overflow-x-auto [scrollbar-width:thin]" style={{ scrollSnapType: 'x proximity' }}>
+      <div
+        key={activeId}
+        role="region"
+        aria-label={activeCategory !== null
+          ? `${activeCategory.name} products`
+          : 'Products'}
+        tabIndex={0}
+        className={`${visibleProducts.length > 0 ? '-mt-7' : 'mt-1'} -ml-10 w-[calc(100%+40px)] min-w-0 shrink-0 overflow-x-auto overflow-y-hidden
+                   overscroll-x-contain snap-x snap-proximity
+                   scroll-px-10 outline-none
+                   [&::-webkit-scrollbar]:h-2
+                   [&::-webkit-scrollbar-track]:ml-10
+                   [&::-webkit-scrollbar-track]:rounded-full
+                   [&::-webkit-scrollbar-track]:bg-(--color-surface)
+                   [&::-webkit-scrollbar-thumb]:rounded-full
+                   [&::-webkit-scrollbar-thumb]:bg-(--color-subtle)`}
+      >
         {visibleProducts.length > 0 ? (
-          <ul className="flex list-none gap-3 pb-2">
+          <ul className="flex w-max min-w-full list-none gap-3 px-10 pt-8 pb-3">
             {visibleProducts.map((product) => (
-              <li key={product.id} className="flex shrink-0" style={{ scrollSnapAlign: 'start' }}>
+              <li key={product.id} className="flex w-[264px] shrink-0 snap-start">
                 <ProductCard product={product} />
               </li>
             ))}
@@ -53,7 +69,6 @@ export function ProductsPanel({
                        bg-(--color-surface) px-6 text-center text-[16px]/[1.4] font-medium
                        text-(--color-muted)"
           >
-            {}
             {categories.length === 0 || products.length === 0
               ? 'Products are unavailable right now. Please check back later.'
               : 'No products in this category yet.'}

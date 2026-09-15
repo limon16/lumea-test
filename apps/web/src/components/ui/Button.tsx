@@ -1,6 +1,6 @@
 import type { CSSProperties, ComponentPropsWithoutRef, ReactNode } from 'react';
 
-type Variant = 'primary' | 'secondary';
+type Variant = 'primary' | 'secondary' | 'card' | 'cardGhost';
 
 interface Props extends ComponentPropsWithoutRef<'button'> {
   variant?: Variant;
@@ -11,7 +11,24 @@ const VARIANTS: Record<Variant, string> = {
   primary: 'bg-(--color-ink) text-(--color-paper)',
   secondary:
     'bg-(--color-surface) text-(--color-ink) hover:text-[#1b3829] focus-visible:text-[#1b3829]',
+  card: 'bg-(--color-accent) text-(--color-paper)',
+  cardGhost:
+    'bg-(--color-surface) text-(--color-ink) hover:text-[#1b3829] focus-visible:text-[#1b3829]',
 };
+
+const SIZES: Record<Variant, string> = {
+  primary: 'px-8 py-4 text-[18px]/[1.2] md:px-[74px] md:py-[30px] md:text-[24px]/[1.2]',
+  secondary: 'px-8 py-4 text-[18px]/[1.2] md:px-[74px] md:py-[30px] md:text-[24px]/[1.2]',
+  card: 'h-11 w-full px-6 text-[16px]/[1.1]',
+  cardGhost: 'h-[42px] w-full px-6 text-[16px]/[1.1]',
+};
+
+const CARD_WAVES = [
+  { color: '#e3e8e9', start: 93, end: 430 },
+  { color: '#858585', start: 130, end: 380 },
+  { color: '#505050', start: 171, end: 320 },
+  { color: '#212721', start: 215, end: 260 },
+];
 
 const PRIMARY_WAVES = [
   { color: '#e5f7ed', start: 256.88, end: 1200 },
@@ -35,20 +52,24 @@ export function Button({
   type = 'button',
   ...rest
 }: Props) {
-  const waves = variant === 'primary' ? PRIMARY_WAVES : SECONDARY_WAVES;
+  const waves = variant === 'primary'
+    ? PRIMARY_WAVES
+    : variant === 'card'
+      ? CARD_WAVES
+      : SECONDARY_WAVES;
+  const compact = variant === 'card' || variant === 'cardGhost';
 
   return (
     <button
       type={type}
       className={`group/button relative isolate inline-flex items-center
-                  justify-center gap-2 overflow-hidden rounded-full px-8 py-4
-                  text-[18px]/[1.2] font-bold transition-colors duration-400
+                  justify-center gap-2 overflow-hidden rounded-full
+                  font-bold transition-colors duration-400
                   ease-[cubic-bezier(0.42,0,0.58,1)] motion-reduce:transition-none
                   focus-visible:outline-2
                   focus-visible:outline-offset-4
                   focus-visible:outline-(--color-accent)
-                  md:px-[74px] md:py-[30px] md:text-[24px]/[1.2]
-                  ${VARIANTS[variant]} ${className}`}
+                  ${SIZES[variant]} ${VARIANTS[variant]} ${className}`}
       {...rest}
     >
         <span
@@ -70,10 +91,12 @@ export function Button({
                          motion-reduce:transition-none"
               style={{
                 background: color,
-                '--wave-start-top': variant === 'primary'
-                  ? 'calc(50% + 190px)'
+                '--wave-start-top': variant === 'primary' || variant === 'card'
+                  ? `calc(50% + ${compact ? 140 : 190}px)`
                   : `calc(100% + ${start / 2 + 2}px)`,
-                '--wave-end-y': variant === 'primary' ? '0.44px' : '3px',
+                '--wave-end-y': variant === 'primary' || variant === 'card'
+                  ? '0.44px'
+                  : '3px',
                 '--start': `${start}px`,
                 '--end': `${end}px`,
               } as CSSProperties}

@@ -2,10 +2,14 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { isInStock, resolvePrice, resolveStock, type Product } from '@lumea/types';
+import {
+  isInStock, resolvePrice, resolveStock, subKey, type Product,
+} from '@lumea/types';
 
 import { strapiMedia } from '@/lib/strapi';
 import { HeartIcon } from '@/components/header/icons';
+import { ArrowUpRight } from '@/components/ui/ArrowUpRight';
+import { Button } from '@/components/ui/Button';
 import { PriceBlock } from './PriceBlock';
 import { VariationGroup } from './VariationGroup';
 import { initialSelection } from './initialSelection';
@@ -16,11 +20,24 @@ interface Props {
 
 const LOW_STOCK = 5;
 
+const CARD_SHADOW = [
+  '1px 2px 4px 0px #9CB6BA1A',
+  '2px 6px 7px 0px #9CB6BA17',
+  '5px 14px 9px 0px #9CB6BA0D',
+  '8px 26px 11px 0px #9CB6BA03',
+  '13px 40px 12px 0px #9CB6BA00',
+  '-12px -8px 16px 0px #9AADA729',
+].join(', ');
+
 export function ProductCard({ product }: Props) {
   const [selected, setSelected] = useState<Record<string, string>>(() =>
     initialSelection(product.variations),
   );
 
+  const sizeLabel = pickSizeLabel(product, selected);
+  const title = sizeLabel === null
+    ? product.name
+    : `${product.name} ${sizeLabel}`;
   const price = resolvePrice(product, selected);
   const stock = resolveStock(product, selected);
   const available = isInStock(product, selected);
@@ -28,11 +45,12 @@ export function ProductCard({ product }: Props) {
 
   return (
     <article
-      className="flex h-full w-full max-w-[264px] shrink-0 flex-col gap-4 rounded-(--radius-md)
-                 bg-(--color-paper) p-0"
+      className="flex h-full max-h-[632px] w-[264px] shrink-0 flex-col gap-4
+                 rounded-(--radius-md) bg-(--color-paper) p-2"
+      style={{ boxShadow: CARD_SHADOW }}
     >
-      <div className="relative aspect-square w-full overflow-hidden rounded-(--radius-md)
-                      bg-(--color-surface)">
+      <div className="relative h-[248px] w-full shrink-0 overflow-hidden
+                      rounded-(--radius-md) bg-(--color-surface)">
         {image !== null ? (
           <Image
             src={image}
@@ -52,14 +70,15 @@ export function ProductCard({ product }: Props) {
         )}
 
         {product.badges.length > 0 && (
-          <ul className="absolute left-2 top-2 flex flex-wrap gap-1">
+          <ul className="absolute left-1 top-1 flex flex-wrap gap-1">
             {product.badges.map((badge) => (
               <li
                 key={badge.id}
-                className="flex h-[39px] min-w-[62px] items-center justify-center
+                className="flex h-[39px] items-center justify-center
                            whitespace-nowrap rounded-(--radius-sm) bg-(--color-ink)
-                           px-2 text-center text-[18px]/[1.3] font-bold
+                           px-3 py-2 text-center text-[18px]/[1.3] font-bold
                            text-(--color-paper)"
+                style={{ boxShadow: CARD_SHADOW }}
               >
                 {badge.name}
               </li>
@@ -70,7 +89,7 @@ export function ProductCard({ product }: Props) {
         <button
           type="button"
           aria-label="Add to wishlist"
-          className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center
+          className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center
                      rounded-(--radius-pill-lg) bg-(--color-surface) transition-colors
                      hover:bg-(--color-border) focus-visible:outline-2
                      focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
@@ -79,10 +98,11 @@ export function ProductCard({ product }: Props) {
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-2">
+      <div className="flex flex-1 flex-col justify-between gap-2 pb-1">
         <div className="flex flex-col gap-3">
-          <h4 className="text-[18px]/[1.2] font-bold text-(--color-ink)">
-            {product.name}
+          <h4 className="flex h-11 items-start text-[18px]/[1.2] font-bold
+                         text-(--color-ink)">
+            {title}
           </h4>
 
           {product.variations.length > 0 && (
@@ -100,35 +120,24 @@ export function ProductCard({ product }: Props) {
           )}
         </div>
 
-        <div className="mt-auto flex flex-col gap-2">
+        <div className="mt-auto flex flex-col gap-2 pt-3">
           <StockLine stock={stock} available={available} />
           <PriceBlock price={price} />
 
           <div className="flex flex-col gap-1.5">
-            <button
-              type="button"
+            <Button
+              variant="card"
               disabled={!available}
-              className="flex h-11 w-full items-center justify-center rounded-(--radius-pill)
-                         bg-(--color-accent) text-[16px]/[1.2] font-bold text-(--color-ink)
-                         transition-transform duration-200 will-change-transform
-                         hover:-translate-y-0.5 focus-visible:outline-2
-                         focus-visible:outline-offset-2 focus-visible:outline-(--color-ink)
-                         active:translate-y-0 motion-reduce:transform-none
-                         disabled:cursor-not-allowed disabled:bg-(--color-border)
-                         disabled:text-(--color-muted) disabled:hover:translate-y-0"
+              className="justify-start disabled:cursor-not-allowed
+                         disabled:bg-(--color-border)
+                         disabled:text-(--color-muted)"
             >
               {available ? 'Add to bag' : 'Out of stock'}
-            </button>
-            <button
-              type="button"
-              className="flex h-[42px] w-full items-center justify-center
-                         rounded-(--radius-pill) bg-(--color-surface) text-[16px]/[1.2]
-                         font-bold text-(--color-ink) transition-colors
-                         hover:bg-(--color-border) focus-visible:outline-2
-                         focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
-            >
+              <ArrowUpRight className="size-5" />
+            </Button>
+            <Button variant="cardGhost" className="justify-start">
               View details
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -159,4 +168,27 @@ function StockLine({ stock, available }: StockProps) {
   ) : (
     <p className="text-[14px]/[1] font-bold text-[#1b3829]">In stock</p>
   );
+}
+
+const SIZE_GROUP = /size|volume|\u0454\u043c\u043d\u0456\u0441\u0442/i;
+
+function pickSizeLabel(
+  product: Product,
+  selected: Record<string, string>,
+): string | null {
+  for (const variation of product.variations) {
+    const value = variation.values.find((v) => v.label === selected[variation.label])
+      ?? variation.values[0];
+    if (value === undefined) continue;
+
+    if (SIZE_GROUP.test(variation.label)) return value.label;
+
+    if (value.subValues.length > 0 && SIZE_GROUP.test(value.subLabel ?? '')) {
+      const sub = value.subValues.find(
+        (item) => item.label === selected[subKey(variation.label, value.label)],
+      ) ?? value.subValues[0];
+      if (sub !== undefined) return sub.label;
+    }
+  }
+  return null;
 }

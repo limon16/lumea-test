@@ -109,7 +109,7 @@ export function MobileSheet({
 
         {visible.length > 0 ? (
           <ul
-            className="-mx-5 flex list-none gap-3 overflow-x-auto px-5 pb-2"
+            className="flex list-none gap-3 overflow-x-auto pb-2"
             style={{ scrollSnapType: 'x proximity' }}
           >
             {visible.map((product) => (

@@ -3,7 +3,7 @@ import { Caveat, Inter, Manrope } from "next/font/google";
 export const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
-  weight: ["500", "700"],
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 

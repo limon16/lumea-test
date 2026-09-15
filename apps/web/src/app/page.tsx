@@ -12,9 +12,9 @@ export default async function Home() {
 
   return (
     <div id="top">
-      <main className="pb-32">
+      <main className="pb-[140px]">
         <Hero header={<Header messages={announcements} />} />
-        <div className="mx-auto max-w-[1440px] px-5 md:px-10">
+        <div className="mx-auto w-full max-w-[1308px] px-[14px]">
           <HowItWorks products={products} categories={categories} />
         </div>
       </main>

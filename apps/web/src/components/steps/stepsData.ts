@@ -5,6 +5,7 @@ export interface Step {
   description: string;
   cta: string;
   image: string;
+  background: string;
 }
 
 export const STEPS: readonly Step[] = [
@@ -16,6 +17,7 @@ export const STEPS: readonly Step[] = [
       'Gently remove makeup, SPF and daily impurities without stripping your skin.',
     cta: 'Shop cleansers',
     image: '/images/step-01.svg',
+    background: 'bg-(--color-surface)',
   },
   {
     number: '02',
@@ -25,6 +27,7 @@ export const STEPS: readonly Step[] = [
       'Serums and treatments deliver targeted ingredients to help with dryness, dullness, texture and blemishes.',
     cta: 'Shop treatments',
     image: '/images/step-02.svg',
+    background: 'bg-[linear-gradient(135deg,#e5f7ed,#92dbb6)]',
   },
   {
     number: '03',
@@ -34,6 +37,7 @@ export const STEPS: readonly Step[] = [
       'Moisturisers help strengthen the skin barrier, lock in hydration and leave skin soft and balanced.',
     cta: 'Shop moisturisers',
     image: '/images/step-03.svg',
+    background: 'bg-(--color-surface)',
   },
   {
     number: '04',
@@ -43,5 +47,6 @@ export const STEPS: readonly Step[] = [
       'Daily SPF helps protect your skin from UV damage and keeps it looking healthy every day.',
     cta: 'Shop SPF',
     image: '/images/step-04.svg',
+    background: 'bg-[radial-gradient(circle_at_50%_50%,#fecbe4,#f5dfe3)]',
   },
 ];
