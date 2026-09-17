@@ -1,5 +1,35 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface OrderItem extends Struct.ComponentSchema {
+  collectionName: 'components_order_items';
+  info: {
+    description: '\u041E\u0434\u0438\u043D \u0442\u043E\u0432\u0430\u0440 \u0443 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u0456: \u043D\u0430\u0437\u0432\u0430, \u043E\u0431\u0440\u0430\u043D\u0456 \u0432\u0430\u0440\u0456\u0430\u043D\u0442\u0438, \u043A\u0456\u043B\u044C\u043A\u0456\u0441\u0442\u044C \u0456 \u0446\u0456\u043D\u0430 \u043D\u0430 \u043C\u043E\u043C\u0435\u043D\u0442 \u043A\u0443\u043F\u0456\u0432\u043B\u0456.';
+    displayName: '\u041F\u043E\u0437\u0438\u0446\u0456\u044F \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F';
+    icon: 'shoppingCart';
+  };
+  attributes: {
+    options: Schema.Attribute.String;
+    product: Schema.Attribute.Relation<'oneToOne', 'api::product.product'>;
+    productName: Schema.Attribute.String & Schema.Attribute.Required;
+    quantity: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
+    unitPrice: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+  };
+}
+
 export interface ProductSubValue extends Struct.ComponentSchema {
   collectionName: 'components_product_sub_values';
   info: {
@@ -113,6 +143,7 @@ export interface SharedAnnouncementMessage extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export namespace Public {
     export interface ComponentSchemas {
+      'order.item': OrderItem;
       'product.sub-value': ProductSubValue;
       'product.variation': ProductVariation;
       'product.variation-value': ProductVariationValue;

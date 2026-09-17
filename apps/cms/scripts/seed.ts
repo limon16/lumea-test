@@ -33,6 +33,8 @@ interface Value {
 
 interface SeedProduct {
   name: string;
+  volumeMode: 'single' | 'byVariation';
+  volume?: string;
   priceMode: 'single' | 'byVariation';
   price?: number;
   discountPercent?: number;
@@ -46,6 +48,7 @@ interface SeedProduct {
 const PRODUCTS: SeedProduct[] = [
   {
     name: 'Hyaluronic Acid Serum',
+    volumeMode: 'single', volume: '30 ml',
     priceMode: 'single', price: 28, discountPercent: 15, stock: 24,
     badges: ['Sale'],
     variations: [{
@@ -59,6 +62,7 @@ const PRODUCTS: SeedProduct[] = [
   },
   {
     name: 'Daily Moisturiser',
+    volumeMode: 'byVariation',
     priceMode: 'byVariation',
     badges: ['New', 'Bestseller'],
     variations: [{
@@ -85,6 +89,7 @@ const PRODUCTS: SeedProduct[] = [
   },
   {
     name: 'Daily Face Cleanser',
+    volumeMode: 'single', volume: '150 ml',
     priceMode: 'single', price: 20, discountedPrice: 17, stock: 2,
     badges: ['Bestseller'],
     variations: [],
@@ -92,6 +97,7 @@ const PRODUCTS: SeedProduct[] = [
   },
   {
     name: 'Gentle Micellar Water',
+    volumeMode: 'single', volume: '200 ml',
     priceMode: 'single', price: 15, stock: 40,
     badges: [],
     variations: [],
@@ -99,6 +105,7 @@ const PRODUCTS: SeedProduct[] = [
   },
   {
     name: 'Vitamin C Brightening Serum',
+    volumeMode: 'single', volume: '30 ml',
     priceMode: 'byVariation',
     badges: ['Sale', 'New'],
     variations: [{
@@ -112,6 +119,7 @@ const PRODUCTS: SeedProduct[] = [
   },
   {
     name: 'Overnight Repair Mask',
+    volumeMode: 'single', volume: '75 ml',
     priceMode: 'single', price: 38, stock: 6,
     badges: [],
     variations: [{

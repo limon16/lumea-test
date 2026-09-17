@@ -26,11 +26,11 @@ export function Hero({ header }: Props) {
         className="pointer-events-none absolute inset-0 -z-10 bg-[url('/images/hero-blur-ellipses-mobile.svg')] bg-cover bg-center md:bg-[url('/images/hero-blur-ellipses.svg')]" />
 
       <div className="mx-auto w-full max-w-[1280px]">
-        <div className="px-5 md:px-[10.5px]">
+        <div className="px-[10.5px]">
           {header}
         </div>
 
-        <div className="px-5 text-center md:px-3.5 md:text-left">
+        <div className="px-[22px] text-center md:px-3.5 md:text-left">
           <h1
             id="hero-heading"
             className="mt-6 text-[40px]/[0.8] font-bold text-(--color-ink)
@@ -39,15 +39,16 @@ export function Hero({ header }: Props) {
           >
             <span className="block">Skincare made</span>
 
-            <span className="block md:flex md:items-baseline
+            <span className="block md:flex md:items-center
                              md:justify-between md:gap-8">
               <span
                 className="mt-[15px] mb-[25px] mx-auto block max-w-[24ch]
-                           text-[18px]/[1] font-bold text-black
-                           md:mx-0 md:my-0 md:max-w-none md:shrink
+                           text-[18px]/[1] font-bold tracking-normal text-black
+                           md:mx-0 md:my-0 md:shrink
                            md:text-[28px]/[1] md:text-[#00c3d0]"
               >
-                Thoughtful formulas for healthy, glowing skin
+                Thoughtful formulas for{' '}
+                <span className="inline md:block">healthy, glowing skin</span>
               </span>
               <span className="block text-[#00c3d0] md:text-[#00c0e8]">
                 simple
@@ -56,7 +57,7 @@ export function Hero({ header }: Props) {
           </h1>
         </div>
 
-        <div className="mt-6 flex flex-col gap-8 px-5 md:mt-[58px]
+        <div className="mt-6 flex flex-col gap-8 px-[22px] md:mt-[58px]
                         md:grid md:grid-cols-[minmax(0,1fr)_246px] md:items-start
                         md:gap-x-10 md:gap-y-0 md:px-3.5
                         lg:grid-cols-[minmax(0,365px)_minmax(0,1fr)_246px]">

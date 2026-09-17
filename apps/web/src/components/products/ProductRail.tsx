@@ -9,10 +9,11 @@ interface Props extends LoadMoreProps {
   products: Product[];
   label: string;
   compact?: boolean;
+  preview?: boolean;
   emptyMessage?: string;
 }
 
-export function ProductRail({ products, label, compact = false, emptyMessage = 'No products found.', ...pagination }: Props) {
+export function ProductRail({ products, label, compact = false, preview = false, emptyMessage = 'No products found.', ...pagination }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLUListElement>(null);
   const scrollbarRef = useRef<HTMLDivElement>(null);
@@ -39,7 +40,7 @@ export function ProductRail({ products, label, compact = false, emptyMessage = '
     if (to && Math.abs(to.scrollLeft - from.scrollLeft) > 1) to.scrollLeft = from.scrollLeft;
   };
   return (
-    <div className={`-ml-10 w-[calc(100%+40px)] min-w-0 shrink-0 ${compact ? '' : '-mt-7'}`}>
+    <div className={`-ml-10 w-[calc(100%+40px)] min-w-0 shrink-0 ${compact ? '-mt-4' : '-mt-7'}`}>
       <div ref={viewportRef} data-scroll-root role="region" aria-label={label} tabIndex={0}
         onScroll={(event) => sync(event.currentTarget, scrollbarRef.current)}
         className="min-w-0 overflow-x-auto overflow-y-hidden overscroll-x-contain snap-x snap-proximity scroll-px-10
@@ -49,7 +50,7 @@ export function ProductRail({ products, label, compact = false, emptyMessage = '
           <ul ref={contentRef} className="flex w-max min-w-full list-none items-stretch gap-3 px-10 pt-8 pb-12">
             {products.map((product) => (
               <li key={product.id} className="flex w-[264px] shrink-0 snap-start">
-                <ProductCard product={product} />
+                <ProductCard product={product} compact={compact} preview={preview} />
               </li>
             ))}
             {pending && <li className="flex min-h-[632px] w-[264px] shrink-0"><LoadMore {...pagination} /></li>}

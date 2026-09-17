@@ -6,6 +6,8 @@ import { filterByCategory } from './filterByCategory';
 const product = (id: number, categoryIds: number[]): Product => ({
   id,
   name: `Product ${id}`,
+  volumeMode: 'single',
+  volume: '30 ml',
   priceMode: 'single',
   stock: null,
   imageUrl: null,

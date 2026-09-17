@@ -23,6 +23,7 @@ import { StepCard } from './StepCard';
 import { STEPS } from './stepsData';
 
 interface Props {
+  selectedCategoryId?: number;
   initialProducts: CatalogPage<Product>;
   initialCategories: CatalogPage<Category>;
 }
@@ -45,14 +46,19 @@ function cardPosition(index: number, active: number): number {
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-export function HowItWorks({ initialProducts, initialCategories }: Props) {
+export function HowItWorks({ initialProducts, initialCategories, selectedCategoryId }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetStep, setSheetStep] = useState(0);
-  const [categoryId, setCategoryId] = useState(initialCategoryId(initialCategories.items));
+  const initialId = selectedCategoryId ?? initialCategoryId(initialCategories.items);
+  const [categoryId, setCategoryId] = useState(initialId);
+  const selectCategory = (id: number) => {
+    setCategoryId(id);
+    document.cookie = `lumea-category=${id}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+  };
   const categoryPage = usePagedCatalog<Category>('/api/catalog?kind=categories', initialCategories);
   const categories = categoryPage.items;
-  const initialUrl = `/api/catalog?kind=products${initialCategories.items[0] ? `&category=${initialCategories.items[0].id}` : ''}`;
+  const initialUrl = `/api/catalog?kind=products${initialId ? `&category=${initialId}` : ''}`;
   const productPage = usePagedCatalog<Product>(`/api/catalog?kind=products${categoryId ? `&category=${categoryId}` : ''}`, initialProducts, initialUrl);
   const products = productPage.items;
   const productPagination = { hasMore: productPage.hasMore, loading: productPage.loading, error: productPage.error, onLoadMore: productPage.loadMore };
@@ -257,7 +263,7 @@ export function HowItWorks({ initialProducts, initialCategories }: Props) {
               products={products}
               categories={categories}
               activeId={categoryId}
-              onSelect={setCategoryId}
+              onSelect={selectCategory}
               productPagination={productPagination}
               categoryPagination={categoryPagination}
             />
@@ -274,7 +280,7 @@ export function HowItWorks({ initialProducts, initialCategories }: Props) {
         productPagination={productPagination}
         categoryPagination={categoryPagination}
         activeCategoryId={categoryId}
-        onCategoryChange={setCategoryId}
+        onCategoryChange={selectCategory}
         steps={STEPS}
         activeStepIndex={sheetStep}
         onStepChange={setSheetStep}

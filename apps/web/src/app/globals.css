@@ -93,6 +93,7 @@ body {
 
 /* Smooth scroll for logo click / back-to-card navigation. */
 html {
+  scrollbar-gutter: stable;
   scroll-behavior: smooth;
 }
 
@@ -180,4 +181,13 @@ html {
   .steps-list { height: auto; overflow: visible; gap: 24px; }
   .step-card-row { position: relative; top: auto; transform: none; }
   .step-anchor { display: block; }
+}
+
+/* Keep modal motion subtle and independent of page layout. */
+@media (prefers-reduced-motion: no-preference) {
+  .shop-dialog[open] { animation: shop-dialog-enter 180ms ease-out; }
+  @keyframes shop-dialog-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 }

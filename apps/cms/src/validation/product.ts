@@ -21,11 +21,29 @@ export function mergeProduct(previous: unknown, update: unknown): unknown {
   return result;
 }
 
+const SIZE_GROUP = /size|volume|ємніст/i;
+const label = (source: Data, key: string) => typeof source[key] === 'string' ? source[key] : '';
+
+function validateVolume(input: Data, groups: Data[], values: Data[]): void {
+  const mode = input.volumeMode ?? 'single';
+  const hasSizeGroup = groups.some((group) => SIZE_GROUP.test(label(group, 'label')))
+    || values.some((value) => SIZE_GROUP.test(label(value, 'subLabel')));
+
+  if (mode === 'single') {
+    if (!filled(input.volume)) throw new ApplicationError('Вкажіть ємність товару, напр. «30 ml».');
+    if (hasSizeGroup) throw new ApplicationError('Товар має варіацію ємності — переставте тип ємності на «Ємність залежить від варіації».');
+  } else if (mode === 'byVariation') {
+    if (filled(input.volume)) throw new ApplicationError('У режимі byVariation приберіть поле ємності — її задають варіанти.');
+    if (!hasSizeGroup) throw new ApplicationError('Додайте варіацію ємності («Size») або переставте тип ємності на «Одна ємність».');
+  } else throw new ApplicationError('Некоректний тип ємності.');
+}
+
 export function validateProduct(input: unknown): void {
   if (!object(input)) throw new ApplicationError('Некоректні дані товару.');
   const mode = input.priceMode ?? 'single';
   const groups = list(input.variations);
   const values = groups.flatMap((group) => list(group.values));
+  validateVolume(input, groups, values);
   const sources = [input, ...values, ...values.flatMap((value) => list(value.subValues))];
   for (const source of sources) {
     for (const field of ['price', 'priceOverride', 'discountedPrice', 'discountPercent', 'stock']) {

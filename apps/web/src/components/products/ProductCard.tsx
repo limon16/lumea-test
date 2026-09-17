@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import {
   isInStock, resolvePrice, resolveStock, subKey, type Product,
@@ -13,15 +13,28 @@ import { Button } from '@/components/ui/Button';
 import { PriceBlock } from './PriceBlock';
 import { VariationGroup } from './VariationGroup';
 import { useShop } from './shopContext';
+import { activeSelection } from './activeSelection';
+import { cartKey } from './cartKey';
 import { initialSelection } from './initialSelection';
 
 interface Props {
   product: Product;
   initialSelected?: Record<string, string>;
   details?: boolean;
+  compact?: boolean;
+  preview?: boolean;
 }
 
 const LOW_STOCK = 5;
+
+const HEART_SHADOW = [
+  '1px 2px 4px 0px #9CB6BA14',
+  '-8px 12px 12px 0px #9CB6BA17',
+  '12px 20px 16px 0px #9CB6BA17',
+  '8px 26px 14px 0px #9CB6BA17',
+  '-20px 40px 30px 0px #9CB6BA0F',
+  '-12px -40px 30px 0px #9CB6BA1A',
+].join(', ');
 
 const CARD_SHADOW = [
   '1px 2px 4px 0px #9CB6BA1A',
@@ -32,7 +45,7 @@ const CARD_SHADOW = [
   '-12px -8px 16px 0px #9AADA729',
 ].join(', ');
 
-export function ProductCard({ product, initialSelected, details = false }: Props) {
+export function ProductCard({ product, initialSelected, details = false, compact = false, preview = false }: Props) {
   const [selected, setSelected] = useState<Record<string, string>>(() =>
     initialSelected ?? initialSelection(product.variations),
   );
@@ -47,15 +60,35 @@ export function ProductCard({ product, initialSelected, details = false }: Props
   const stock = resolveStock(product, selected);
   const available = isInStock(product, selected);
   const image = strapiMedia(product.imageUrl);
+  const inBag = shop.cart.find(
+    (item) => item.key === cartKey(product.id, activeSelection(product, selected)),
+  );
+
+  if (preview) return (
+    <article className="flex w-[264px] flex-col gap-3 rounded-2xl bg-white p-3" style={{ boxShadow: CARD_SHADOW }}>
+      <div className="relative h-[clamp(0px,calc(100dvh-420px),160px)] shrink-0 overflow-hidden rounded-xl bg-(--color-surface)">
+        {image && <Image src={image} alt={product.imageAlt ?? product.name} fill sizes="240px" className="object-contain" />}
+      </div>
+      <div className="flex items-start gap-2">
+        <h3 className="line-clamp-2 min-h-10 flex-1 text-[16px]/[1.25] font-bold" title={title}>{title}</h3>
+        <button type="button" aria-label={`Remove ${product.name} from wishlist`} onClick={() => shop.toggleWishlist(product)}
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-surface) text-(--color-ink) focus-visible:outline-2">
+          <HeartIcon className="size-[22px] fill-current" />
+        </button>
+      </div>
+      <PriceBlock price={price} />
+      <Button size="dialog" onClick={() => shop.show({ product, selected })}>View details <ArrowUpRight className="size-5" /></Button>
+    </article>
+  );
 
   return (
     <article
-      className="flex h-full min-h-[632px] w-[264px] shrink-0 flex-col gap-4
-                 rounded-(--radius-md) bg-(--color-paper) p-2 break-words"
+      className={`flex h-full w-[264px] shrink-0 flex-col gap-4
+                 rounded-(--radius-md) bg-(--color-paper) p-2 break-words ${compact ? '' : 'min-h-[632px]'}`}
       style={{ boxShadow: CARD_SHADOW }}
     >
-      <div className="relative h-[248px] w-full shrink-0 overflow-hidden
-                      rounded-(--radius-md) bg-(--color-surface)">
+      <div className={`relative w-full shrink-0 overflow-hidden
+                      rounded-(--radius-md) bg-(--color-surface) ${compact ? 'h-[160px]' : 'h-[248px]'}`}>
         {image !== null ? (
           <Image
             src={image}
@@ -96,7 +129,8 @@ export function ProductCard({ product, initialSelected, details = false }: Props
           aria-label={saved ? 'Remove from wishlist' : 'Add to wishlist'}
           aria-pressed={saved}
           onClick={() => shop.toggleWishlist(product)}
-          className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center
+          style={{ boxShadow: HEART_SHADOW }}
+          className="absolute bottom-2 right-2 flex size-11 items-center justify-center
                      rounded-(--radius-pill-lg) bg-(--color-surface) transition-colors
                      hover:bg-(--color-border) focus-visible:outline-2
                      focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
@@ -132,17 +166,27 @@ export function ProductCard({ product, initialSelected, details = false }: Props
           <PriceBlock price={price} />
 
           <div className="flex flex-col gap-1.5">
-            <Button
-              variant="card"
-              onClick={() => shop.addToBag(product, selected)}
-              disabled={!available}
-              className="justify-start disabled:cursor-not-allowed
-                         disabled:bg-(--color-border)
-                         disabled:text-(--color-muted)"
-            >
-              {available ? 'Add to bag' : 'Out of stock'}
-              <ArrowUpRight className="size-5" />
-            </Button>
+            {inBag !== undefined && available ? (
+              <QuantityControl
+                quantity={inBag.quantity}
+                stock={stock}
+                onDecrease={() => shop.decreaseInBag(inBag.key)}
+                onIncrease={() => shop.addToBag(product, selected)}
+                label={product.name}
+              />
+            ) : (
+              <Button
+                variant="card"
+                onClick={() => shop.addToBag(product, selected)}
+                disabled={!available}
+                className="justify-start disabled:cursor-not-allowed
+                           disabled:bg-(--color-border)
+                           disabled:text-(--color-muted)"
+              >
+                {available ? 'Add to bag' : 'Out of stock'}
+                {available && <ArrowUpRight className="size-5" />}
+              </Button>
+            )}
             <Button variant="cardGhost" className="justify-start" onClick={() => details ? shop.show('cart') : shop.show({ product, selected })}>
               {details ? 'View bag' : 'View details'}
             </Button>
@@ -150,6 +194,73 @@ export function ProductCard({ product, initialSelected, details = false }: Props
         </div>
       </div>
     </article>
+  );
+}
+
+interface QuantityProps {
+  quantity: number;
+  stock: number | null;
+  label: string;
+  onDecrease: () => void;
+  onIncrease: () => void;
+}
+
+function QuantityControl({
+  quantity, stock, label, onDecrease, onIncrease,
+}: QuantityProps) {
+  const atMax = stock !== null && quantity >= stock;
+
+  return (
+    <div className="flex h-11 w-full items-center justify-between gap-2
+                    rounded-full bg-(--color-surface) px-2">
+      <StepButton
+        label={quantity > 1
+          ? `Decrease quantity of ${label}`
+          : `Remove ${label} from bag`}
+        onClick={onDecrease}
+      >
+        −
+      </StepButton>
+
+      <span className="text-[16px]/[1.1] font-bold text-(--color-ink)">
+        {quantity} in bag
+      </span>
+
+      <StepButton
+        label={`Increase quantity of ${label}`}
+        onClick={onIncrease}
+        disabled={atMax}
+      >
+        +
+      </StepButton>
+    </div>
+  );
+}
+
+interface StepProps {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  children: ReactNode;
+}
+
+function StepButton({ label, onClick, disabled = false, children }: StepProps) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className="flex size-8 shrink-0 items-center justify-center rounded-full
+                 bg-(--color-paper) text-[18px]/[1] font-bold text-(--color-ink)
+                 transition-colors hover:bg-(--color-border)
+                 disabled:cursor-not-allowed disabled:text-(--color-muted)
+                 disabled:hover:bg-(--color-paper)
+                 focus-visible:outline-2 focus-visible:outline-offset-2
+                 focus-visible:outline-(--color-accent)"
+    >
+      {children}
+    </button>
   );
 }
 
@@ -184,6 +295,8 @@ function pickSizeLabel(
   product: Product,
   selected: Record<string, string>,
 ): string | null {
+  if (product.volumeMode === 'single') return product.volume;
+
   for (const variation of product.variations) {
     const value = variation.values.find((v) => v.label === selected[variation.label])
       ?? variation.values[0];

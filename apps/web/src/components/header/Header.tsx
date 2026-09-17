@@ -14,7 +14,7 @@ interface Props {
 const NAV_ITEMS = ['Shop', 'Skincare', 'Sets', 'About'];
 
 const ICON_BUTTON_CLASS =
-  'flex size-10 items-center justify-center rounded-full bg-(--color-paper)'
+  'flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-paper)'
   + ' shadow-[1px_2px_4px_0px_#9CB6BA1A,2px_6px_7px_0px_#9CB6BA17,5px_14px_9px_0px_#9CB6BA0D,8px_26px_11px_0px_#9CB6BA03,-12px_-8px_16px_0px_#9AADA729]'
   + ' text-(--color-ink) transition-colors hover:text-(--color-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ink)';
 
@@ -28,8 +28,9 @@ export function Header({ messages }: Props) {
       >
         <a
           href="#top"
-          className="shrink-0 font-(family-name:--font-wordmark)
-                     text-[28px] md:text-[40px] font-bold text-(--color-ink) focus-visible:outline-2"
+          className="hidden shrink-0 font-(family-name:--font-wordmark)
+                     text-[28px] min-[769px]:block md:text-[40px] font-bold
+                     text-(--color-ink) focus-visible:outline-2"
           style={{ letterSpacing: 0 }}
         >
           LUMEA
@@ -46,7 +47,7 @@ export function Header({ messages }: Props) {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-1 md:ml-0 md:gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-1 md:ml-0 md:gap-2">
           <button
             type="button"
             aria-label="Menu"
@@ -58,28 +59,40 @@ export function Header({ messages }: Props) {
           <button
             type="button"
             aria-label="Search"
-            onClick={() => shop.show('search')}
+            disabled
             className={`${ICON_BUTTON_CLASS} hidden md:flex`}
           >
             <SearchIcon className="size-[22px]" />
           </button>
           <button
             type="button"
-            aria-label="Wishlist"
-            onClick={() => shop.show('wishlist')}
-            className={ICON_BUTTON_CLASS}
+            aria-label={shop.restored ? `Wishlist, ${shop.wishlist.length} items` : 'Wishlist'}
+            disabled
+            className={`${ICON_BUTTON_CLASS} relative`}
           >
             <HeartIcon className="size-[22px]" />
+            {shop.restored && shop.wishlist.length > 0 && (
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-1 -right-1 flex size-5
+                           items-center justify-center rounded-full
+                           bg-(--color-ink) text-[14px]/[1] font-bold
+                           text-(--color-paper)"
+              >
+                {shop.wishlist.length}
+              </span>
+            )}
           </button>
           <button
             type="button"
-            aria-label={`Cart, ${shop.count} items`}
+            aria-label={shop.restored ? `Cart, ${shop.count} items` : 'Cart'}
             onClick={() => shop.show('cart')}
             className={`${ICON_BUTTON_CLASS} relative size-11 md:size-10`}
           >
             <CartIcon className="size-[22px]" />
             <span
               aria-hidden="true"
+              style={{ visibility: shop.restored ? 'visible' : 'hidden' }}
               className="absolute -bottom-1 -right-1 flex size-5
                          items-center justify-center rounded-full
                          bg-(--color-ink) text-[14px]/[1] font-bold

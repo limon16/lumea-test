@@ -37,7 +37,7 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
               <span
                 className="absolute -left-[5px] -top-[8px] font-bold
                            text-[#bfbfbf] text-[56px]/[1]
-                           md:-left-[7px] md:-top-[11px] md:text-[80px]/[1]"
+                           md:-left-[6px] md:-top-[10px] md:text-[80px]/[1]"
               >
                 {step.number}
               </span>
@@ -65,9 +65,6 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
       <button
         type="button"
         onClick={onShop}
-        tabIndex={isActive ? 0 : -1}
-        aria-hidden={!isActive}
-        style={{ visibility: isActive ? 'visible' : 'hidden' }}
         className="flex w-fit items-center gap-2 border-b
                    border-(--color-ink) pb-1 text-[20px]/[1.2] font-bold
                    text-(--color-ink) transition-transform duration-200

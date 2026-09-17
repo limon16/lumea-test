@@ -6,6 +6,7 @@ import type { Product } from './product';
 
 const base = (over: Partial<Product> = {}): Product => ({
   id: 1, name: 'Serum', imageUrl: null, imageAlt: null,
+  volumeMode: 'single', volume: '30 ml',
   priceMode: 'single', price: 32, discountPercent: null, discountedPrice: null,
   stock: null, badges: [], variations: [], categoryIds: [], ...over,
 });

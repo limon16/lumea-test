@@ -4,6 +4,7 @@ type Variant = 'primary' | 'secondary' | 'card' | 'cardGhost';
 
 interface Props extends ComponentPropsWithoutRef<'button'> {
   variant?: Variant;
+  size?: 'default' | 'dialog';
   children: ReactNode;
 }
 
@@ -47,6 +48,7 @@ const SECONDARY_WAVES = [
 
 export function Button({
   variant = 'primary',
+  size = 'default',
   children,
   className = '',
   type = 'button',
@@ -69,7 +71,7 @@ export function Button({
                   focus-visible:outline-2
                   focus-visible:outline-offset-4
                   focus-visible:outline-(--color-accent)
-                  ${SIZES[variant]} ${VARIANTS[variant]} ${className}`}
+                  ${size === 'dialog' ? 'min-h-12 px-6 py-3 text-[16px]/[1.2]' : SIZES[variant]} ${VARIANTS[variant]} ${className}`}
       {...rest}
     >
         <span

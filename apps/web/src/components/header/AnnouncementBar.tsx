@@ -24,11 +24,11 @@ export function AnnouncementBar({ messages }: Props) {
 
   return (
     <div
-      className="relative mx-auto grid w-fit min-h-11 max-w-[calc(100vw-2rem)]
+      className="relative mx-auto grid w-full min-h-11 max-w-full
                  place-items-center overflow-hidden bg-(--color-ink) px-5
                  py-[10px] text-center text-[16px]/[1.1] font-bold
                  text-(--color-paper)
-                 sm:min-w-[458px] sm:max-w-[600px]"
+                 min-[769px]:w-fit min-[769px]:max-w-[min(458px,100%)]"
       style={{ letterSpacing: 0 }}
       aria-live="polite"
       aria-atomic="true"

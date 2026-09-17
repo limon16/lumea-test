@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_order_items",
+  "info": {
+    "displayName": "Позиція замовлення",
+    "icon": "shoppingCart",
+    "description": "Один товар у замовленні: назва, обрані варіанти, кількість і ціна на момент купівлі."
+  },
+  "options": {},
+  "attributes": {
+    "product": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::product.product",
+      "description": "Товар з каталогу. Може бути порожнім, якщо товар згодом видалили."
+    },
+    "productName": {
+      "type": "string",
+      "required": true,
+      "description": "Назва товару на момент замовлення — зберігається окремо, бо в каталозі назва може змінитися."
+    },
+    "options": {
+      "type": "string",
+      "description": "Обрані варіанти, напр. «Normal · 50 ml». Порожнє, якщо товар без варіацій."
+    },
+    "quantity": {
+      "type": "integer",
+      "required": true,
+      "min": 1,
+      "description": "Скільки одиниць цієї позиції замовлено."
+    },
+    "unitPrice": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "description": "Ціна за одиницю на момент замовлення, з урахуванням знижки."
+    }
+  }
+}

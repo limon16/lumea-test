@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import type { Product } from '@lumea/types';
 import { ShopProvider } from '@/components/products/ShopProvider';
 import { emptyPage } from '@/lib/catalog';
@@ -12,19 +13,30 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [categories, announcements] = await Promise.all([
+  const savedId = Number((await cookies()).get('lumea-category')?.value);
+  const [firstCategories, announcements] = await Promise.all([
     getCategoryPage(), getAnnouncements(),
   ]);
-  const category = categories.items[0];
+  let categories = firstCategories;
+  // Load through the saved category so pagination and tab order stay consistent.
+  if (Number.isSafeInteger(savedId) && savedId > 0) {
+    while (!categories.error && !categories.items.some((item) => item.id === savedId)
+      && categories.page < categories.pageCount) {
+      const next = await getCategoryPage(categories.page + 1);
+      if (next.error) break;
+      categories = { ...next, items: [...categories.items, ...next.items] };
+    }
+  }
+  const category = categories.items.find((item) => item.id === savedId) ?? categories.items[0];
   const products = category ? await getProductPage(1, category.id) : { ...emptyPage<Product>(), pageCount: 0 };
 
   return (
     <ShopProvider>
     <div id="top">
-      <main className="pb-[140px]">
+      <main className="pb-[30px] min-[769px]:pb-[140px]">
         <Hero header={<Header messages={announcements} />} />
         <div className="mx-auto w-full max-w-[1308px] px-[14px]">
-          <HowItWorks initialProducts={products} initialCategories={categories} />
+          <HowItWorks initialProducts={products} initialCategories={categories} selectedCategoryId={category?.id} />
         </div>
       </main>
     </div>

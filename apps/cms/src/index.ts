@@ -1,4 +1,5 @@
 import { mergeProduct, validateProduct } from './validation/product';
+import { restoreStock } from './validation/order';
 import type { Core } from '@strapi/strapi';
 
 const PUBLIC_READ: { uid: string; actions: string[] }[] = [
@@ -6,6 +7,8 @@ const PUBLIC_READ: { uid: string; actions: string[] }[] = [
   { uid: 'api::category.category', actions: ['find', 'findOne'] },
   { uid: 'api::badge.badge', actions: ['find', 'findOne'] },
   { uid: 'api::announcement-bar.announcement-bar', actions: ['find'] },
+  // Лише create: замовлення покупців не можна читати публічно.
+  { uid: 'api::order.order', actions: ['create'] },
 ];
 
 async function grantPublicRead(strapi: Core.Strapi): Promise<void> {
@@ -43,6 +46,20 @@ export default {
             populate: { variations: { populate: { values: { populate: ['subValues'] } } } },
           }) : {};
         validateProduct(mergeProduct(previous, params.data));
+      }
+
+      // Скасування повертає товари на склад, повторне — ні.
+      if (context.uid === 'api::order.order' && context.action === 'update') {
+        const params = context.params as { documentId?: string; data?: { status?: unknown } };
+        if (params.data?.status === 'cancelled' && params.documentId) {
+          const order = await strapi.documents('api::order.order').findOne({
+            documentId: params.documentId,
+            populate: { items: { populate: ['product'] } },
+          });
+          if (order !== null && order.status !== 'cancelled') {
+            await restoreStock(strapi, order as never);
+          }
+        }
       }
       return next();
     });

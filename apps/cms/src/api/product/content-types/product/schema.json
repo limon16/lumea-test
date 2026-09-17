@@ -14,7 +14,31 @@
     "name": {
       "type": "string",
       "required": true,
-      "description": "Назва товару без ємності, напр. «Daily Moisturiser». Ємність додається окремо у варіації."
+      "description": "Назва товару без ємності, напр. «Daily Moisturiser». Ємність додається окремо — полем «Ємність» або варіацією."
+    },
+    "volumeMode": {
+      "type": "enumeration",
+      "enum": [
+        "single",
+        "byVariation"
+      ],
+      "default": "single",
+      "required": true,
+      "description": "«single» — товар однієї ємності, вкажіть її у полі нижче. «byVariation» — ємність обирає покупець у варіації «Size», тоді поле нижче не заповнюється."
+    },
+    "volume": {
+      "type": "string",
+      "description": "Ємність товару з одиницями, напр. «30 ml». Показується в назві на картці. Обовʼязкове, коли ємність одна.",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "volumeMode"
+            },
+            "single"
+          ]
+        }
+      }
     },
     "image": {
       "type": "media",

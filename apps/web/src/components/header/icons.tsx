@@ -4,6 +4,8 @@ interface IconProps {
 
 const commonProps = {
   viewBox: '0 0 22 22',
+  width: 22,
+  height: 22,
   fill: 'none',
   stroke: 'currentColor',
   strokeWidth: 0.6875,

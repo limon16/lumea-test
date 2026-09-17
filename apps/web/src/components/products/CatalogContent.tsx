@@ -17,6 +17,7 @@ export function CatalogContent({ products, categories, activeId, onSelect, produ
   if (categories.length === 0) {
     return <CatalogState
       state={categoryPagination?.loading ? 'loading' : categoryPagination?.error ? 'unavailable' : 'empty'}
+      retrying={Boolean(categoryPagination?.loading && categoryPagination?.error)}
       onRetry={categoryPagination?.error ? categoryPagination.onLoadMore : undefined} />;
   }
   const category = categories.find((item) => item.id === activeId);
@@ -28,6 +29,7 @@ export function CatalogContent({ products, categories, activeId, onSelect, produ
         <div className="mt-1">
           <CatalogState
             state={productPagination?.loading ? 'loading' : productPagination?.error ? 'unavailable' : 'empty'}
+            retrying={Boolean(productPagination?.loading && productPagination?.error)}
             onRetry={productPagination?.error ? productPagination.onLoadMore : undefined} />
         </div>
       ) : (
