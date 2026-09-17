@@ -59,7 +59,7 @@ export function Header({ messages }: Props) {
           <button
             type="button"
             aria-label="Search"
-            disabled
+            onClick={() => shop.show('search')}
             className={`${ICON_BUTTON_CLASS} hidden md:flex`}
           >
             <SearchIcon className="size-[22px]" />
@@ -67,7 +67,7 @@ export function Header({ messages }: Props) {
           <button
             type="button"
             aria-label={shop.restored ? `Wishlist, ${shop.wishlist.length} items` : 'Wishlist'}
-            disabled
+            onClick={() => shop.show('wishlist')}
             className={`${ICON_BUTTON_CLASS} relative`}
           >
             <HeartIcon className="size-[22px]" />

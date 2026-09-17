@@ -91,6 +91,22 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Keep scrollbar tracks transparent on both page and nested scrollers. */
+* {
+  scrollbar-color: var(--color-subtle) transparent;
+}
+
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-subtle);
+  border-radius: 999px;
+}
+
 /* Smooth scroll for logo click / back-to-card navigation. */
 html {
   scrollbar-gutter: stable;
@@ -224,4 +240,12 @@ html {
     min-height: 0;
     aspect-ratio: auto;
   }
+}
+
+/* Search states fit the space below the input without a second scroll area. */
+.search-products > [aria-busy] {
+  min-height: 0;
+  flex: 1;
+  padding-block: 12px;
+  gap: 12px;
 }

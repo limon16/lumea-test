@@ -56,7 +56,7 @@ export function ProductRail({ products, label, compact = false, preview = false,
                 <ProductCard product={product} compact={compact} preview={preview} />
               </li>
             ))}
-            {pending && <li className={`flex shrink-0 ${compact ? 'w-[160px]' : 'min-h-[632px] w-[264px]'}`}><LoadMore {...pagination} /></li>}
+            {pending && <li className={`flex shrink-0 ${compact ? 'w-[160px]' : preview ? 'w-[264px]' : 'min-h-[632px] w-[264px]'}`}><LoadMore {...pagination} /></li>}
           </ul>
         ) : (
           <p className="ml-10 mt-8 mb-12 flex min-h-48 items-center justify-center rounded-3xl bg-(--color-surface) px-6 text-center">
@@ -67,6 +67,7 @@ export function ProductRail({ products, label, compact = false, preview = false,
       {/* A second native scroll surface places the scrollbar 12px below the
           cards while their shadows retain 48px of unclipped painting space. */}
       <div ref={scrollbarRef} aria-hidden="true" tabIndex={-1}
+        style={{ visibility: 'hidden' }}
         onScroll={(event) => sync(event.currentTarget, viewportRef.current)}
         className={`relative z-10 h-3 overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:thin]
           ${compact ? '-mt-10 ml-2.5' : '-mt-9 ml-10'}`}>

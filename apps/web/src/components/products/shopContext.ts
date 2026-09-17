@@ -4,7 +4,7 @@ import { createContext, useContext } from 'react';
 import type { Product } from '@lumea/types';
 
 export type Selection = Record<string, string>;
-export type View = 'cart' | 'checkout' | 'placed' | 'menu' | { product: Product; selected: Selection } | null;
+export type View = 'search' | 'wishlist' | 'cart' | 'checkout' | 'placed' | 'menu' | { product: Product; selected: Selection } | null;
 export interface CartItem { key: string; product: Product; selected: Selection; quantity: number; unitPrice: number; stock: number | null }
 interface Shop {
   restored: boolean;

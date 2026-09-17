@@ -66,8 +66,14 @@ export function ProductCard({ product, initialSelected, details = false, compact
 
   if (preview) return (
     <article className="flex w-[264px] flex-col gap-3 rounded-2xl bg-white p-3" style={{ boxShadow: CARD_SHADOW }}>
-      <div className="relative h-[clamp(0px,calc(100dvh-420px),160px)] shrink-0 overflow-hidden rounded-xl bg-(--color-surface)">
-        {image && <Image src={image} alt={product.imageAlt ?? product.name} fill sizes="240px" className="object-contain" />}
+      <div className="relative h-[var(--preview-image-height,clamp(0px,calc(100dvh-420px),160px))] shrink-0 overflow-hidden rounded-xl bg-(--color-surface)">
+        {image ? (
+          <Image src={image} alt={product.imageAlt ?? product.name} fill sizes="240px" className="object-contain" />
+        ) : (
+          <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-[14px]/[1] font-bold text-(--color-muted)">
+            No image
+          </div>
+        )}
       </div>
       <div className="flex items-start gap-2">
         <h3 className="line-clamp-2 min-h-10 flex-1 text-[16px]/[1.25] font-bold" title={title}>{title}</h3>
@@ -145,7 +151,7 @@ export function ProductCard({ product, initialSelected, details = false, compact
         </button>
       </div>
 
-      <div className="flex flex-1 flex-col justify-between gap-2 pb-1">
+      <div className={`flex flex-1 flex-col justify-between pb-1 ${compact ? 'gap-1.5' : 'gap-2'}`}>
         <div className="flex flex-col gap-3">
           <h4 className={`flex text-(--color-ink)
                          ${compact
@@ -180,7 +186,7 @@ export function ProductCard({ product, initialSelected, details = false, compact
           {!compact && <StockLine stock={stock} available={available} />}
           <PriceBlock price={price} compact={compact} />
 
-          <div className={`flex gap-1.5 ${compact ? 'flex-col-reverse gap-2' : 'flex-col'}`}>
+          <div className={`flex ${compact ? 'flex-col-reverse gap-3' : 'flex-col gap-1.5'}`}>
             {inBag !== undefined && available ? (
               <QuantityControl
                 quantity={inBag.quantity}
@@ -254,7 +260,7 @@ function QuantityControl({
       </StepButton>
 
       <span className="text-[16px]/[1.1] font-bold text-(--color-ink)">
-        {quantity} in bag
+        {quantity}
       </span>
 
       <StepButton

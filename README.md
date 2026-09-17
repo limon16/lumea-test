@@ -1,67 +1,62 @@
 # LUMEA
 
-Hero-секція та інтерактивний блок «How it works» з каталогом товарів.
-Контент (товари, категорії, мітки, announcement bar) керується зі Strapi.
+Hero та секція «How it works» із каталогом товарів. Товари, категорії,
+мітки й announcement bar керуються через Strapi.
 
-## Технології
+**Стек:** Next.js 16, React 19, Tailwind CSS 4, GSAP, Strapi 5, PostgreSQL 16.
 
-| | |
-|---|---|
-| Frontend | Next.js 16, React 19, Tailwind CSS 4 |
-| CMS | Strapi 5 |
-| База | PostgreSQL 16 (Docker) |
-| Пакети | pnpm 11, монорепо |
-| Анімації | GSAP ScrollTrigger |
+## Локальний запуск
 
-## Структура
-
-```
-apps/web      — Next.js фронтенд
-apps/cms      — Strapi CMS
-packages/types — спільні типи, нормалізація, розрахунок цін
-```
-
-## Запуск
-
-Потрібні Node 22.13+, pnpm 11 і Docker.
+Потрібні Node.js 22.13+, pnpm 11 і запущений Docker. Порт 5432 має бути вільним.
 
 ```bash
 pnpm install
-cp apps/cms/.env.example apps/cms/.env
+cp -n apps/cms/.env.example apps/cms/.env
 pnpm dev
 ```
 
-`pnpm dev` піднімає PostgreSQL у Docker і запускає обидва застосунки:
+Команда запускає базу, frontend і CMS:
 
-- фронтенд — http://localhost:3000
-- адмінка Strapi — http://localhost:1337/admin
+- [Frontend](http://localhost:3000)
+- [Strapi Admin](http://localhost:1337/admin) — увійдіть існуючим акаунтом; для нової порожньої бази створіть адміністратора.
 
-При першому запуску Strapi попросить створити адміністратора.
+Приклад `.env` налаштований для локального PostgreSQL. Якщо файл уже існує,
+додайте відсутні `DATABASE_*` із прикладу — команда копіювання його не перезаписує.
+Для production замініть тестові секрети Strapi та доступ до бази.
 
-### Наповнити тестовими даними
+### Тестові дані
 
 ```bash
 pnpm --filter cms build
 pnpm --filter cms seed
 ```
 
-Додасть 6 товарів, 3 категорії, мітки й повідомлення announcement bar.
+Додає 6 товарів, 3 категорії, мітки й оголошення.
+
+## Структура
+
+```text
+apps/web       — frontend
+apps/cms       — Strapi CMS
+packages/types — спільні типи, нормалізація та розрахунок цін
+```
 
 ## Команди
 
 ```bash
-pnpm dev      # база + фронтенд + CMS
-pnpm build    # зібрати все
+pnpm build    # збірка
 pnpm test     # тести
-pnpm db:up    # лише база
-pnpm stop     # зупинити базу
+pnpm db:up    # запуск лише бази
+pnpm stop     # зупинка бази
 ```
 
-## Змінні оточення
+## Налаштування frontend
 
-`apps/cms/.env` — з `.env.example` (ключі Strapi, доступ до бази).
+Необов’язкові змінні в `apps/web/.env.local` або налаштуваннях хостингу:
 
-Для фронтенду за потреби:
-
-- `NEXT_PUBLIC_STRAPI_URL` — адреса CMS, типово `http://127.0.0.1:1337`
-- `IMAGE_ORIGINS` — додаткові домени для зображень
+| Змінна | Призначення |
+| --- | --- |
+| `NEXT_PUBLIC_STRAPI_URL` | Публічна адреса CMS; типово `http://127.0.0.1:1337` |
+| `STRAPI_URL` | Внутрішня адреса CMS, якщо відрізняється від публічної |
+| `IMAGE_ORIGINS` | Додаткові origins зображень через кому, зі схемою `https://` |
+| `NEXT_PUBLIC_SITE_URL` | Адреса сайту для SEO; на Vercel визначається автоматично, якщо не задана |

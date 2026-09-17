@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Checkout } from './Checkout';
 import { ProductCard } from './ProductCard';
+import { ProductRail } from './ProductRail';
+import { SearchProducts } from './SearchProducts';
 import { ShopContext, type CartItem, type Selection, type View } from './shopContext';
 import { activeSelection } from './activeSelection';
 import { cartKey } from './cartKey';
@@ -23,7 +25,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   useLayoutEffect(() => {
     const saved = readShop<CartItem, Product>();
     if (saved !== null) {
-      setCart(saved.cart);
+      setCart(saved.cart.map((item) => ({ ...item, unitPrice: resolvePrice(item.product, item.selected).final })));
       setWishlist(saved.wishlist);
     }
     setRestored(true);
@@ -47,7 +49,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     setCart((items) => {
       const existing = items.find((item) => item.key === key);
       if (existing) return items.map((item) => item.key === key ? { ...item, quantity: Math.min(item.quantity + 1, stock ?? Infinity) } : item);
-      return [...items, { key, product, selected: { ...selected }, quantity: 1, unitPrice: Math.round(resolvePrice(product, selected).final), stock }];
+      return [...items, { key, product, selected: { ...selected }, quantity: 1, unitPrice: resolvePrice(product, selected).final, stock }];
     });
     setNotice(`${product.name} added to your bag.`);
   };
@@ -59,18 +61,18 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     ? items.filter((item) => item.id !== product.id) : [...items, product]);
   const browse = () => { show(null); requestAnimationFrame(() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })); };
   const total = cart.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-  const title = view === 'cart' ? 'Your bag' : view === 'checkout' ? 'Checkout' : view === 'placed' ? 'Order placed' : view === 'menu' ? 'Explore LUMEA' : typeof view === 'object' && view ? view.product.name : '';
+  const title = view === 'search' ? 'Search products' : view === 'wishlist' ? 'Your wishlist' : view === 'cart' ? 'Your bag' : view === 'checkout' ? 'Checkout' : view === 'placed' ? 'Order placed' : view === 'menu' ? 'Explore LUMEA' : typeof view === 'object' && view ? view.product.name : '';
   return (
     <ShopContext.Provider value={{ restored, count: cart.reduce((sum, item) => sum + item.quantity, 0), cart, wishlist, toggleWishlist, addToBag, removeFromBag, decreaseInBag, show }}>
       {children}
       <div role="status" aria-live="polite" className={`fixed bottom-5 left-1/2 z-50 max-w-[calc(100%-32px)] -translate-x-1/2 rounded-full bg-(--color-ink) px-5 py-3 text-center text-white ${notice ? '' : 'sr-only'}`}>{notice}</div>
       {view !== null && (
-        <Modal title={title} onClose={() => show(null)}>
-          {notice && <p role="status" className="mb-5 rounded-2xl border border-[#d8e8dc] bg-[#ecf5ee] px-4 py-3 text-[14px]/[1.5]">{notice}</p>}
+        <Modal title={title} stableHeight={view === 'search' || view === 'cart'} contained={view === 'search' || view === 'cart'} wide={view === 'search' || view === 'wishlist'} compact={view === 'wishlist' && wishlist.length > 0} onClose={() => show(null)}>
+          {notice && <p role="status" className="mb-5 shrink-0 rounded-2xl border border-[#d8e8dc] bg-[#ecf5ee] px-4 py-3 text-[14px]/[1.5]">{notice}</p>}
           {view === 'cart' && (
-            <div className="flex flex-col gap-5">
-              {cart.length === 0 ? <ShopEmpty title="A little space for your essentials" description="Your bag is empty. Find your next skincare favourite." /> : <ul className="flex flex-col gap-4">
-                {cart.map((item) => <li key={item.key} className="flex flex-wrap items-center justify-between gap-5 rounded-[24px] border border-(--color-border)/70 bg-white p-5 shadow-[0_4px_20px_-12px_#9aada766]">
+            <div className="flex min-h-0 flex-1 flex-col gap-5">
+              {cart.length === 0 ? <ShopEmpty title="A little space for your essentials" description="Your bag is empty. Find your next skincare favourite." /> : <ul className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pr-2 [scrollbar-gutter:stable]">
+                {cart.map((item) => <li key={item.key} className="flex shrink-0 flex-wrap items-center justify-between gap-5 rounded-[24px] border border-(--color-border)/70 bg-white p-5 shadow-[0_4px_20px_-12px_#9aada766]">
                   <div className="min-w-0 flex-1 basis-[200px]"><h3 className="break-words text-[17px]/[1.4] font-bold">{item.product.name}</h3><p className="mt-1 text-[13px]/[1.5] text-[#68746b]">{Object.values(item.selected).join(' · ')}</p><p className="mt-3 text-[15px] font-bold">{formatPrice(item.unitPrice)} <span className="font-normal text-[#68746b]">each</span></p></div>
                   <div className="flex flex-wrap items-center gap-3">
                     <button type="button" aria-label={`Decrease quantity of ${item.product.name}`} onClick={() => decreaseInBag(item.key)} className="size-11 shrink-0 rounded-full border border-(--color-border) bg-[#f3f5f3] transition-colors hover:bg-[#e5eee7] focus-visible:outline-2">−</button>
@@ -80,8 +82,8 @@ export function ShopProvider({ children }: { children: ReactNode }) {
                   </div>
                 </li>)}
               </ul>}
-              <p className="flex items-center justify-between border-t border-(--color-border) pt-5 text-[20px] font-bold"><span>Total</span><span>{formatPrice(total)}</span></p>
-              <div className="flex flex-wrap gap-3">
+              <p className="flex shrink-0 items-center justify-between border-t border-(--color-border) pt-5 text-[20px] font-bold"><span>Total</span><span>{formatPrice(total)}</span></p>
+              <div className="flex shrink-0 flex-wrap gap-3">
                 {cart.length > 0 && (
                   <Button onClick={() => show('checkout')} variant="primary" size="dialog" className="w-full sm:w-auto">Checkout</Button>
                 )}
@@ -103,7 +105,11 @@ export function ShopProvider({ children }: { children: ReactNode }) {
               <Button type="button" onClick={browse} variant="secondary" size="dialog" className="w-full sm:w-auto">Continue shopping</Button>
             </div>
           )}
-          {view === 'menu' && <nav aria-label="Mobile navigation" className="flex flex-col gap-4"><Button onClick={browse} variant="secondary" size="dialog" className="w-full sm:w-auto">Shop skincare</Button><Button disabled variant="secondary" size="dialog" className="w-full sm:w-auto">Search products</Button><Button disabled variant="secondary" size="dialog" className="w-full sm:w-auto">Wishlist</Button></nav>}
+          {view === 'search' && <SearchProducts />}
+          {view === 'wishlist' && (wishlist.length > 0
+            ? <div className="pt-4"><ProductRail products={wishlist} label="Wishlist products" preview /></div>
+            : <ShopEmpty title="Your favourites, all in one place" description="Save a product using its heart button and come back to it here." onBrowse={browse} />)}
+          {view === 'menu' && <nav aria-label="Mobile navigation" className="flex flex-col gap-4"><Button onClick={browse} variant="secondary" size="dialog" className="w-full sm:w-auto">Shop skincare</Button><Button onClick={() => show('search')} variant="secondary" size="dialog" className="w-full sm:w-auto">Search products</Button><Button onClick={() => show('wishlist')} variant="secondary" size="dialog" className="w-full sm:w-auto">Wishlist</Button></nav>}
           {typeof view === 'object' && view && <div className="flex min-w-0 justify-center py-5 sm:px-5"><ProductCard key={view.product.id} product={view.product} initialSelected={view.selected} details /></div>}
         </Modal>
       )}
