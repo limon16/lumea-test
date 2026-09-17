@@ -9,6 +9,8 @@ import type { CartItem } from './shopContext';
 interface Props {
   cart: CartItem[];
   total: number;
+  promoCode?: string;
+  pricingReady?: boolean;
   onPlaced: () => void;
   onBack: () => void;
 }
@@ -20,7 +22,7 @@ const FIELD_CLASS = 'rounded-2xl border border-(--color-border) bg-(--color-pape
   + ' focus-visible:outline-2 focus-visible:outline-offset-2'
   + ' focus-visible:outline-(--color-accent)';
 
-export function Checkout({ cart, total, onPlaced, onBack }: Props) {
+export function Checkout({ cart, total, promoCode, pricingReady = true, onPlaced, onBack }: Props) {
   const [details, setDetails] = useState<CheckoutDetails>(EMPTY);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -33,10 +35,10 @@ export function Checkout({ cart, total, onPlaced, onBack }: Props) {
 
   async function place(event: React.FormEvent) {
     event.preventDefault();
-    if (!ready || sending) return;
+    if (!ready || !pricingReady || sending) return;
     setSending(true);
     setError('');
-    const result = await submitOrder(cart, details);
+    const result = await submitOrder(cart, details, promoCode);
     setSending(false);
     if (result.ok) onPlaced();
     else setError(result.error ?? 'Could not place the order.');
@@ -125,7 +127,7 @@ export function Checkout({ cart, total, onPlaced, onBack }: Props) {
         <Button
           type="submit"
           variant="card"
-          disabled={!ready || sending}
+          disabled={!ready || !pricingReady || sending}
           size="dialog"
           className="w-full sm:w-auto px-8 disabled:cursor-not-allowed
                      disabled:bg-(--color-border) disabled:text-(--color-muted)"

@@ -17,7 +17,7 @@ export interface OrderResult {
  * Мітки обраних варіантів у порядку від верхньої групи до вкладеної —
  * сервер за ними знаходить варіант і бере його ціну з бази.
  */
-function labelsOf(item: CartItem): string[] {
+export function labelsOf(item: CartItem): string[] {
   const labels: string[] = [];
   for (const variation of item.product.variations) {
     const chosen = item.selected[variation.label];
@@ -32,12 +32,14 @@ function labelsOf(item: CartItem): string[] {
 export async function submitOrder(
   cart: CartItem[],
   details: CheckoutDetails,
+  promoCode = '',
 ): Promise<OrderResult> {
   try {
     const response = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        promoCode,
         customerName: details.customerName,
         phone: details.phone,
         email: details.email,

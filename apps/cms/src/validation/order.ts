@@ -1,3 +1,4 @@
+import { normalizePromo } from './promo';
 import { errors } from '@strapi/utils';
 import type { Core } from '@strapi/strapi';
 
@@ -117,19 +118,24 @@ export function parseOrderInput(raw: unknown) {
   if (items.length === 0) throw new ApplicationError('Кошик порожній.');
   if (items.length > 50) throw new ApplicationError('Забагато позицій у замовленні.');
 
-  return { customerName, phone, email, comment, items };
+  return { customerName, phone, email, comment, items, promoCode: normalizePromo(raw.promoCode) };
 }
 
 /**
  * Збирає замовлення за даними з БД і списує залишки.
  * Ціни рахуються тут, а не приймаються від клієнта.
  */
-export async function buildOrder(strapi: Core.Strapi, input: ReturnType<typeof parseOrderInput>) {
+export async function buildOrder(
+  strapi: Core.Strapi,
+  input: ReturnType<typeof parseOrderInput>,
+  { skipUnavailable = false }: { skipUnavailable?: boolean } = {},
+) {
   const items: Data[] = [];
   const stockUpdates: { documentId: string; data: Data }[] = [];
+  const unavailableItems: { index: number; productId: number }[] = [];
   let total = 0;
 
-  for (const line of input.items) {
+  for (const [index, line] of input.items.entries()) {
     const found = await strapi.documents('api::product.product').findMany({
       filters: { id: line.productId },
       populate: { ...POPULATE, categories: true, badges: true },
@@ -137,12 +143,20 @@ export async function buildOrder(strapi: Core.Strapi, input: ReturnType<typeof p
     const product = found[0];
 
     if (product === undefined) {
+      if (skipUnavailable) {
+        unavailableItems.push({ index, productId: line.productId });
+        continue;
+      }
       throw new ApplicationError('Товар із замовлення більше не доступний.');
     }
 
     const variant = resolveVariant(product, line.labels);
 
     if (variant.stock !== null && variant.stock < line.quantity) {
+      if (skipUnavailable) {
+        unavailableItems.push({ index, productId: line.productId });
+        continue;
+      }
       throw new ApplicationError(
         `«${String(product.name)}»: доступно лише ${variant.stock} шт.`,
       );
@@ -165,7 +179,7 @@ export async function buildOrder(strapi: Core.Strapi, input: ReturnType<typeof p
     }
   }
 
-  return { items, total, stockUpdates };
+  return { items, total, stockUpdates, unavailableItems };
 }
 
 /** Повертає товари скасованого замовлення на склад. */

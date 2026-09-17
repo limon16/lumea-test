@@ -56,6 +56,17 @@
       "required": true,
       "min": 0,
       "description": "Підсумкова сума, порахована на сервері."
+    },
+    "promoCode": {
+      "type": "string"
+    },
+    "subtotal": {
+      "type": "decimal",
+      "min": 0
+    },
+    "discountAmount": {
+      "type": "decimal",
+      "min": 0
     }
   }
 }

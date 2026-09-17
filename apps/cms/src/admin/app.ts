@@ -40,18 +40,37 @@ const FIELD_LABELS: Record<string, string> = {
   quantity: 'Кількість',
   unitPrice: 'Ціна за одиницю',
 
+  // Промокоди
+  code: 'Промокод',
+  minimumSubtotal: 'Мінімальна сума замовлення',
+
   // Смуга оголошень
   text: 'Текст',
   messages: 'Повідомлення',
 };
+
+// Content Manager шукає підписи полів за повним ID моделі, а не лише
+// за назвою атрибута. Ці ключі працюють і в таблиці, і у формі запису.
+const PROMO_CODE_LABELS: Record<string, string> = {
+  'content-manager.content-types.api::promo-code.promo-code.code': 'Промокод',
+  'content-manager.content-types.api::promo-code.promo-code.discountPercent': 'Знижка, %',
+  'content-manager.content-types.api::promo-code.promo-code.enabled': 'Активний',
+  'content-manager.content-types.api::promo-code.promo-code.minimumSubtotal': 'Мінімальна сума замовлення',
+  'content-manager.content-types.api::promo-code.promo-code.startsAt': 'Діє з',
+  'content-manager.content-types.api::promo-code.promo-code.expiresAt': 'Діє до',
+  'content-manager.content-types.api::promo-code.promo-code.singleUse': 'Одноразовий',
+  'content-manager.content-types.api::promo-code.promo-code.usedAt': 'Дата використання',
+};
+
+const TRANSLATIONS = { ...FIELD_LABELS, ...PROMO_CODE_LABELS };
 
 export default {
   config: {
     locales: ['uk'],
     // Підписи задаємо для обох локалей: адмінка може лишатися англійською.
     translations: {
-      uk: FIELD_LABELS,
-      en: FIELD_LABELS,
+      uk: TRANSLATIONS,
+      en: TRANSLATIONS,
     },
   },
   bootstrap() {},

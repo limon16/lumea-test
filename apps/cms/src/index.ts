@@ -1,3 +1,4 @@
+import { preparePromo, PROMO_UID } from './validation/promo';
 import { mergeProduct, validateProduct } from './validation/product';
 import { restoreStock } from './validation/order';
 import type { Core } from '@strapi/strapi';
@@ -8,7 +9,7 @@ const PUBLIC_READ: { uid: string; actions: string[] }[] = [
   { uid: 'api::badge.badge', actions: ['find', 'findOne'] },
   { uid: 'api::announcement-bar.announcement-bar', actions: ['find'] },
   // Лише create: замовлення покупців не можна читати публічно.
-  { uid: 'api::order.order', actions: ['create'] },
+  { uid: 'api::order.order', actions: ['create', 'quote'] },
 ];
 
 async function grantPublicRead(strapi: Core.Strapi): Promise<void> {
@@ -38,6 +39,13 @@ async function grantPublicRead(strapi: Core.Strapi): Promise<void> {
 export default {
   register({ strapi }: { strapi: Core.Strapi }) {
     strapi.documents.use(async (context, next) => {
+      if (context.uid === PROMO_UID && ['create', 'update'].includes(context.action)) {
+        const params = context.params as { documentId?: string; data: Record<string, unknown> };
+        const previous = params.documentId ? await strapi.documents(PROMO_UID).findOne({ documentId: params.documentId }) : {};
+        const merged: Record<string, unknown> = { ...previous, ...params.data };
+        preparePromo(merged);
+        params.data.code = merged.code;
+      }
       if (context.uid === 'api::product.product' && ['create', 'update'].includes(context.action)) {
         const params = context.params as { documentId?: string; data?: unknown };
         const previous = context.action === 'update' && params.documentId

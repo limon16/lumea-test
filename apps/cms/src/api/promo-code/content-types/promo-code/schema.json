@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "promo_codes",
+  "info": {
+    "singularName": "promo-code",
+    "pluralName": "promo-codes",
+    "displayName": "Промокоди"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "code": {
+      "type": "string",
+      "unique": true,
+      "maxLength": 40,
+      "description": "Залиште порожнім для автоматичної генерації при збереженні."
+    },
+    "discountPercent": {
+      "type": "integer",
+      "required": true,
+      "min": 1,
+      "max": 100,
+      "description": "Відсоток знижки від 1 до 100."
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Вимкніть, щоб деактивувати промокод."
+    },
+    "minimumSubtotal": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0,
+      "description": "Мінімальна сума товарів, потрібна для застосування промокоду."
+    },
+    "startsAt": {
+      "type": "datetime",
+      "description": "Дата й час початку дії. Порожнє поле — діє одразу."
+    },
+    "expiresAt": {
+      "type": "datetime",
+      "description": "Дата й час завершення дії. Порожнє поле — без обмеження."
+    },
+    "singleUse": {
+      "type": "boolean",
+      "default": false,
+      "description": "Увімкнено — лише одне успішне замовлення. Вимкнено — багаторазовий."
+    },
+    "usedAt": {
+      "type": "datetime",
+      "configurable": false,
+      "description": "Автоматично: дата використання одноразового коду."
+    }
+  }
+}

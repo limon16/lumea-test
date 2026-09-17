@@ -325,7 +325,9 @@ describe('resolveStock / isInStock', () => {
 });
 
 describe('formatPrice', () => {
-  it('форматує з фунтом без копійок', () => {
-    expect(formatPrice(27.2)).toBe('£27');
+  it('зберігає копійки, але не додає їх до цілих сум', () => {
+    expect(formatPrice(27.2)).toBe('£27.20');
+    expect(formatPrice(27)).toBe('£27');
+    expect(formatPrice(23.799999)).toBe('£23.80');
   });
 });
