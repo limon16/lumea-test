@@ -88,7 +88,9 @@ export function resolvePrice(
 }
 
 export function formatPrice(value: number): string {
-  return `£${Math.round(value).toString()}`;
+  const rounded = round2(value);
+  // Копійки показуємо лише коли вони є: £28, але £23.80.
+  return `£${Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(2)}`;
 }
 
 export function resolveStock(

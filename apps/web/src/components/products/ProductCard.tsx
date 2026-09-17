@@ -83,12 +83,16 @@ export function ProductCard({ product, initialSelected, details = false, compact
 
   return (
     <article
-      className={`flex h-full w-[264px] shrink-0 flex-col gap-4
-                 rounded-(--radius-md) bg-(--color-paper) p-2 break-words ${compact ? '' : 'min-h-[632px]'}`}
+      className={`flex shrink-0 flex-col break-words bg-(--color-paper)
+                 ${compact
+                   ? 'h-[355px] w-[160px] gap-3 rounded-[12px] border border-transparent px-1 pt-1 pb-3 [background:linear-gradient(var(--color-paper),var(--color-paper))_padding-box,linear-gradient(to_bottom,#f3f5f5,#f5fcfd)_border-box]'
+                   : 'h-full min-h-[632px] w-[264px] gap-4 rounded-(--radius-md) p-2'}`}
       style={{ boxShadow: CARD_SHADOW }}
     >
-      <div className={`relative w-full shrink-0 overflow-hidden
-                      rounded-(--radius-md) bg-(--color-surface) ${compact ? 'h-[160px]' : 'h-[248px]'}`}>
+      <div className={`relative w-full shrink-0 overflow-hidden bg-(--color-surface)
+                      ${compact
+                        ? 'aspect-square rounded-[12px]'
+                        : 'h-[248px] rounded-(--radius-md)'}`}>
         {image !== null ? (
           <Image
             src={image}
@@ -112,10 +116,11 @@ export function ProductCard({ product, initialSelected, details = false, compact
             {product.badges.map((badge) => (
               <li
                 key={badge.id}
-                className="flex h-[39px] items-center justify-center
-                           whitespace-nowrap rounded-(--radius-sm) bg-(--color-ink)
-                           px-3 py-2 text-center text-[18px]/[1.3] font-bold
-                           text-(--color-paper)"
+                className={`flex items-center justify-center whitespace-nowrap
+                           bg-(--color-ink) text-center text-(--color-paper)
+                           ${compact
+                             ? 'rounded-[8px] px-2 py-1 text-[16px]/[1.2]'
+                             : 'h-[39px] rounded-(--radius-sm) px-3 py-2 text-[18px]/[1.3] font-bold'}`}
                 style={{ boxShadow: CARD_SHADOW }}
               >
                 {badge.name}
@@ -130,23 +135,33 @@ export function ProductCard({ product, initialSelected, details = false, compact
           aria-pressed={saved}
           onClick={() => shop.toggleWishlist(product)}
           style={{ boxShadow: HEART_SHADOW }}
-          className="absolute bottom-2 right-2 flex size-11 items-center justify-center
+          className={`absolute flex items-center justify-center
                      rounded-(--radius-pill-lg) bg-(--color-surface) transition-colors
                      hover:bg-(--color-border) focus-visible:outline-2
-                     focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
+                     focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)
+                     ${compact ? 'bottom-1.5 right-1.5 size-8' : 'bottom-2 right-2 size-11'}`}
         >
-          <HeartIcon className={`h-8 w-8 ${saved ? 'fill-(--color-accent) text-(--color-accent)' : 'text-(--color-ink)'}`} />
+          <HeartIcon className={`${compact ? 'size-5' : 'h-8 w-8'} ${saved ? 'fill-(--color-accent) text-(--color-accent)' : 'text-(--color-ink)'}`} />
         </button>
       </div>
 
       <div className="flex flex-1 flex-col justify-between gap-2 pb-1">
         <div className="flex flex-col gap-3">
-          <h4 className="flex min-h-11 items-start text-[18px]/[1.2] font-bold
-                         text-(--color-ink)">
-            {title}
+          <h4 className={`flex text-(--color-ink)
+                         ${compact
+                           ? 'h-[57px] flex-col overflow-hidden text-[16px]/[1.2] font-medium'
+                           : 'min-h-11 items-start text-[18px]/[1.2] font-bold'}`}>
+            {compact ? (
+              <>
+                {/* Назва — не більше двох рядків, решта в «…»; ємність завжди
+                    лишається видимою третім рядком. */}
+                <span className="line-clamp-2">{product.name}</span>
+                {sizeLabel !== null && <span className="shrink-0">{sizeLabel}</span>}
+              </>
+            ) : title}
           </h4>
 
-          {product.variations.length > 0 && (
+          {!compact && product.variations.length > 0 && (
             <div className="flex flex-col gap-3">
               {product.variations.map((variation) => (
                 <VariationGroup
@@ -161,11 +176,11 @@ export function ProductCard({ product, initialSelected, details = false, compact
           )}
         </div>
 
-        <div className="mt-auto flex flex-col gap-2 pt-3">
-          <StockLine stock={stock} available={available} />
-          <PriceBlock price={price} />
+        <div className={`mt-auto flex flex-col ${compact ? 'gap-3' : 'gap-2 pt-3'}`}>
+          {!compact && <StockLine stock={stock} available={available} />}
+          <PriceBlock price={price} compact={compact} />
 
-          <div className="flex flex-col gap-1.5">
+          <div className={`flex gap-1.5 ${compact ? 'flex-col-reverse gap-2' : 'flex-col'}`}>
             {inBag !== undefined && available ? (
               <QuantityControl
                 quantity={inBag.quantity}
@@ -179,17 +194,33 @@ export function ProductCard({ product, initialSelected, details = false, compact
                 variant="card"
                 onClick={() => shop.addToBag(product, selected)}
                 disabled={!available}
-                className="justify-start disabled:cursor-not-allowed
+                className={`disabled:cursor-not-allowed
                            disabled:bg-(--color-border)
-                           disabled:text-(--color-muted)"
+                           disabled:text-(--color-muted)
+                           ${compact
+                             ? 'justify-center gap-1 whitespace-nowrap px-3'
+                             : 'justify-start'}`}
               >
                 {available ? 'Add to bag' : 'Out of stock'}
-                {available && <ArrowUpRight className="size-5" />}
+                {available && <ArrowUpRight className={compact ? 'size-[22px] shrink-0' : 'size-5'} />}
               </Button>
             )}
-            <Button variant="cardGhost" className="justify-start" onClick={() => details ? shop.show('cart') : shop.show({ product, selected })}>
-              {details ? 'View bag' : 'View details'}
-            </Button>
+            {compact ? (
+              <button
+                type="button"
+                onClick={() => details ? shop.show('cart') : shop.show({ product, selected })}
+                className="self-start text-[14px]/[1.3] text-(--color-ink)
+                           underline underline-offset-4 focus-visible:outline-2
+                           focus-visible:outline-offset-2
+                           focus-visible:outline-(--color-accent)"
+              >
+                {details ? 'View bag' : 'View details'}
+              </button>
+            ) : (
+              <Button variant="cardGhost" className="justify-start" onClick={() => details ? shop.show('cart') : shop.show({ product, selected })}>
+                {details ? 'View bag' : 'View details'}
+              </Button>
+            )}
           </div>
         </div>
       </div>

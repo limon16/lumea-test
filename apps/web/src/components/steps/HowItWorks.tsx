@@ -86,7 +86,7 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
     };
 
     mm.add({ desktop: DESKTOP_QUERY, mobile: '(width < 1024px)', reduce: '(prefers-reduced-motion: reduce)' }, (context) => {
-      if (!context.conditions?.desktop || context.conditions.reduce) {
+      if (context.conditions?.reduce) {
         const line = stackLine(cards.length, STACK_TOP_MOBILE, STACK_STEP);
         const syncActive = () => activate(pickActiveStep(
           cards.map((card) => card.getBoundingClientRect().top), line,
@@ -100,6 +100,17 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
         });
         syncActive();
         return;
+      }
+      if (!context.conditions?.desktop) {
+        const list = cards[0]?.parentElement;
+        if (!list) return;
+        const sync = () => {
+          const index = Math.min(cards.length - 1, Math.floor((list.scrollTop + 1) / (420 + CARD_GAP)));
+          activate(index);
+        };
+        list.addEventListener('scroll', sync, { passive: true });
+        sync();
+        return () => list.removeEventListener('scroll', sync);
       }
       // Product height only reserves document space. It must never change
       // the sticky top or the positions of cards that have already arrived.
@@ -170,9 +181,14 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
   };
 
   const scrollToCard = (index: number) => {
+    if (!window.matchMedia(DESKTOP_QUERY).matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const list = cardRefs.current[0]?.parentElement;
+      list?.scrollTo({ top: index * (420 + CARD_GAP), behavior: 'smooth' });
+      return;
+    }
     const trigger = scrollTriggerRef.current;
 
-    if (trigger !== null && window.matchMedia(DESKTOP_QUERY).matches) {
+    if (trigger !== null) {
       const top = trigger.start
         + (trigger.end - trigger.start) * index / (STEPS.length - 1);
       window.scrollTo({ top, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
@@ -242,6 +258,7 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
                     '--stack-top': `${STACK_TOP_MOBILE + index * STACK_STEP}px`,
                     '--card-height': `${CARD_H}px`,
                     '--initial-y': `${cardPosition(index, 0)}px`,
+                    '--mobile-index': index,
                     zIndex: index,
                   } as CSSProperties}
                 >

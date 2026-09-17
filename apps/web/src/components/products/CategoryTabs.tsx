@@ -8,6 +8,7 @@ interface Props extends LoadMoreProps {
   categories: Category[];
   activeId: number;
   onSelect: (id: number) => void;
+  compact?: boolean;
 }
 
 const MENU_SHADOW = [
@@ -19,18 +20,22 @@ const MENU_SHADOW = [
   '-12px -8px 16px 0px #9AADA729',
 ].join(', ');
 
-export function CategoryTabs({ categories, activeId, onSelect, ...pagination }: Props) {
+export function CategoryTabs({ categories, activeId, onSelect, compact = false, ...pagination }: Props) {
   return (
-    <div data-scroll-root
-      className="relative -my-10 -ml-10 w-[calc(100%+40px)] shrink-0 overflow-x-auto
-                 p-10 scroll-px-10 overscroll-x-contain
-                 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-    >
+    <div className="w-full shrink-0">
+      {/* Падінги дають тіні місце: overflow-x:auto робить overflow-y теж
+          скрольним, тож без запасу її зрізало б. Відступ до вкладок при цьому
+          лишається 12px — решту з'їдає сама тінь. */}
+      <div data-scroll-root
+        className="relative w-full overflow-x-auto
+                   pt-10 pr-3 pb-[5px] pl-3 scroll-pl-3 overscroll-x-contain
+                   [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
       <div
         role="group"
         aria-label="Product categories"
-        className="flex w-fit items-center gap-6 rounded-(--radius-pill-lg)
-                   bg-(--color-paper) p-1"
+        className={`flex w-fit items-center rounded-(--radius-pill-lg)
+                   bg-(--color-paper) ${compact ? 'gap-3 p-1' : 'gap-6 p-1'}`}
         style={{ boxShadow: MENU_SHADOW }}
       >
         {categories.map((category) => {
@@ -42,8 +47,9 @@ export function CategoryTabs({ categories, activeId, onSelect, ...pagination }: 
               type="button"
               aria-pressed={isActive}
               onClick={() => onSelect(category.id)}
-              className={`flex h-[68px] shrink-0 items-center whitespace-nowrap
-                          rounded-(--radius-pill-lg) px-8 text-[18px]/[1.1]
+              className={`flex shrink-0 items-center whitespace-nowrap
+                          rounded-(--radius-pill-lg) text-[18px]/[1.3]
+                          ${compact ? 'p-3' : 'h-[68px] px-8'}
                           font-bold transition-colors focus-visible:outline-2
                           focus-visible:outline-offset-2
                           focus-visible:outline-(--color-accent)
@@ -58,7 +64,8 @@ export function CategoryTabs({ categories, activeId, onSelect, ...pagination }: 
             </button>
           );
         })}
-        <LoadMore {...pagination} />
+          <LoadMore {...pagination} />
+        </div>
       </div>
     </div>
   );

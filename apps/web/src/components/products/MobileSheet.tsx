@@ -9,6 +9,15 @@ import { CatalogContent } from './CatalogContent';
 import { filterByCategory } from './filterByCategory';
 import type { LoadMoreProps } from './LoadMore';
 
+const STEP_SHADOW = [
+  '1px 2px 4px 0px #9CB6BA1A',
+  '2px 6px 7px 0px #9CB6BA17',
+  '5px 14px 9px 0px #9CB6BA0D',
+  '8px 26px 11px 0px #9CB6BA03',
+  '13px 40px 12px 0px #9CB6BA00',
+  '-12px -8px 16px 0px #9AADA729',
+].join(', ');
+
 interface StepOption {
   number: string;
   title: string;
@@ -75,39 +84,39 @@ export function MobileSheet({
         if (event.target === ref.current) onClose();
       }}
       aria-label={title}
-      className="sheet rounded-t-[32px] bg-(--color-paper) backdrop:bg-black/40"
+      className="sheet bg-(--color-paper) backdrop:bg-black/40"
     >
-      <div className="flex max-h-[90vh] flex-col gap-6 overflow-y-auto p-5 pb-8">
-        <div className="flex items-start justify-between gap-4">
-          <h3 className="text-[24px]/[1.1] font-bold text-(--color-ink)">
-            {title}
-          </h3>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close products"
-            className="flex h-8 w-8 shrink-0 items-center justify-center
-                       rounded-full text-(--color-muted) transition-colors
-                       hover:text-(--color-ink) focus-visible:outline-2
-                       focus-visible:outline-offset-2
-                       focus-visible:outline-(--color-accent)"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
-              <path
-                d="M5 5l14 14M19 5L5 19"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-        </div>
+      {/* Бічних падінгів немає навмисно: скрол-смуги всередині самі тримають
+          відступи, інакше overflow обрізав би тіні карток і вкладок. */}
+      <div className="relative flex h-full flex-col overflow-y-auto pt-[60px] pb-8">
+        <h3 className="mb-4 text-center text-[24px]/[1.2] font-bold text-(--color-ink)">
+          {title}
+        </h3>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close products"
+          className="absolute right-5 top-5 flex size-8 items-center justify-center
+                     rounded-full bg-(--color-surface) text-(--color-ink)
+                     transition-colors hover:bg-(--color-border)
+                     focus-visible:outline-2 focus-visible:outline-offset-2
+                     focus-visible:outline-(--color-accent)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4">
+            <path
+              d="M5 5l14 14M19 5L5 19"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
 
-        <CatalogContent products={visible} categories={categories} activeId={activeCategoryId}
+        <CatalogContent products={visible} categories={categories} activeId={activeCategoryId} compact
           onSelect={onCategoryChange} productPagination={productPagination} categoryPagination={categoryPagination} />
 
-        <div className="flex flex-col gap-4">
-          <p className="text-[18px]/[1.2] font-medium text-(--color-muted)">
+        <div className="mt-auto flex shrink-0 flex-col gap-4 px-3">
+          <p className="text-center text-[18px]/[1.3] font-medium text-[#858585]">
             Shop products for:
           </p>
           <ul role="radiogroup" onKeyDown={optionKeys} aria-label="Care step"
@@ -122,17 +131,30 @@ export function MobileSheet({
                     role="radio"
                     aria-checked={isActive}
                     tabIndex={isActive ? 0 : -1}
-                    className={`flex h-[35px] w-full items-center justify-center
-                                gap-1.5 rounded-xl text-[14px]/[1] font-bold
+                    style={{ boxShadow: STEP_SHADOW }}
+                    className={`flex h-[35px] w-full items-center justify-start
+                                gap-2.5 rounded-[12px] border px-3 py-1.5
+                                text-[18px]/[1.3]
                                 transition-colors focus-visible:outline-2
                                 focus-visible:outline-offset-2
                                 focus-visible:outline-(--color-accent)
                                 ${isActive
-                                  ? 'bg-(--color-ink) text-(--color-paper)'
-                                  : 'bg-(--color-paper) text-(--color-ink) ring-1 ring-(--color-border)'}`}
+                                  ? 'border-transparent bg-(--color-ink) text-(--color-paper)'
+                                  : 'border-[#d9e1e2] bg-white text-(--color-ink)'}`}
                   >
-                    <span>{step.number}</span>
-                    <span>{step.title}</span>
+                    <span
+                      aria-hidden="true"
+                      className="relative block h-5 w-[42px] shrink-0 overflow-hidden
+                                 text-center text-[38px]/[1] font-medium text-[#bfbfbf]"
+                      style={{ letterSpacing: '-0.02em' }}
+                    >
+                      {/* Цифра більша за рамку і зсунута вгору — у макеті так само,
+                          верхівка зрізається і лишається характерний знак. */}
+                      <span className="absolute inset-x-0 top-[-5.2px]">
+                        {step.number}
+                      </span>
+                    </span>
+                    <span className="font-bold">{step.title}</span>
                   </button>
                 </li>
               );

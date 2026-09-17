@@ -11,9 +11,10 @@ interface Props {
   onSelect: (id: number) => void;
   productPagination?: LoadMoreProps;
   categoryPagination?: LoadMoreProps;
+  compact?: boolean;
 }
 
-export function CatalogContent({ products, categories, activeId, onSelect, productPagination, categoryPagination }: Props) {
+export function CatalogContent({ products, categories, activeId, onSelect, productPagination, categoryPagination, compact = false }: Props) {
   if (categories.length === 0) {
     return <CatalogState
       state={categoryPagination?.loading ? 'loading' : categoryPagination?.error ? 'unavailable' : 'empty'}
@@ -23,8 +24,8 @@ export function CatalogContent({ products, categories, activeId, onSelect, produ
   const category = categories.find((item) => item.id === activeId);
   const initialState = products.length === 0 && (productPagination?.loading || productPagination?.error || !productPagination?.hasMore);
   return (
-    <div className="flex min-w-0 flex-col gap-3">
-      <CategoryTabs categories={categories} activeId={activeId} onSelect={onSelect} {...categoryPagination} />
+    <div className="flex min-w-0 flex-col">
+      <CategoryTabs categories={categories} activeId={activeId} onSelect={onSelect} compact={compact} {...categoryPagination} />
       {initialState ? (
         <div className="mt-1">
           <CatalogState
@@ -33,7 +34,7 @@ export function CatalogContent({ products, categories, activeId, onSelect, produ
             onRetry={productPagination?.error ? productPagination.onLoadMore : undefined} />
         </div>
       ) : (
-        <ProductRail key={activeId} products={products}
+        <ProductRail key={activeId} products={products} compact={compact}
           label={category ? `${category.name} products` : 'Products'} {...productPagination} />
       )}
     </div>
