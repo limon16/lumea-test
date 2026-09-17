@@ -12,7 +12,7 @@ export default factories.createCoreController('api::order.order', ({ strapi }) =
   async create(ctx) {
     const input = parseOrderInput((ctx.request.body as { data?: unknown } | undefined)?.data);
     const result = await strapi.db.transaction(async ({ trx }: { trx: Parameters<ReturnType<typeof strapi.db.getConnection>['transacting']>[0] }) => {
-      // Serialize redemption of a code; the lock lasts until the order commits.
+      // Використання коду серіалізується: блокування тримається до коміту замовлення.
       if (input.promoCode) {
         await strapi.db.getConnection('promo_codes').transacting(trx)
           .where({ code: input.promoCode }).forUpdate().first();

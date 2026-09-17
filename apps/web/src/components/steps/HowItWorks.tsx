@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Fragment, useRef, useState, type CSSProperties } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -33,6 +33,7 @@ const STACK_STEP = 24;
 const PANEL_H = 754;
 const COLLAPSED_PEEK = 24;
 const CARD_H = 546;
+const MOBILE_CARD_H = 420;
 const CARD_GAP = 24;
 const STICKY_TOP = 40;
 const SCROLL_PER_CARD = 420;
@@ -51,21 +52,20 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetStep, setSheetStep] = useState(0);
   const initialId = selectedCategoryId ?? initialCategoryId(initialCategories.items);
-  const [categoryId, setCategoryId] = useState(initialId);
+  const [chosenCategoryId, setChosenCategoryId] = useState(initialId);
   const selectCategory = (id: number) => {
-    setCategoryId(id);
+    setChosenCategoryId(id);
     document.cookie = `lumea-category=${id}; Path=/; Max-Age=31536000; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
   };
   const categoryPage = usePagedCatalog<Category>('/api/catalog?kind=categories', initialCategories);
   const categories = categoryPage.items;
+  // Поки користувач нічого не обрав, а категорії довантажилися пізніше — беремо першу.
+  const categoryId = chosenCategoryId || initialCategoryId(categories);
   const initialUrl = `/api/catalog?kind=products${initialId ? `&category=${initialId}` : ''}`;
   const productPage = usePagedCatalog<Product>(`/api/catalog?kind=products${categoryId ? `&category=${categoryId}` : ''}`, initialProducts, initialUrl);
   const products = productPage.items;
   const productPagination = { hasMore: productPage.hasMore, loading: productPage.loading, error: productPage.error, onLoadMore: productPage.loadMore };
   const categoryPagination = { hasMore: categoryPage.hasMore, loading: categoryPage.loading, error: categoryPage.error, onLoadMore: categoryPage.loadMore };
-  useEffect(() => {
-    if (categoryId === 0 && categories[0]) setCategoryId(categories[0].id);
-  }, [categoryId, categories]);
   const anchorRefs = useRef<(HTMLLIElement | null)[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -105,24 +105,24 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
         const list = cards[0]?.parentElement;
         if (!list) return;
         const sync = () => {
-          const index = Math.min(cards.length - 1, Math.floor((list.scrollTop + 1) / (420 + CARD_GAP)));
+          const index = Math.min(cards.length - 1, Math.floor((list.scrollTop + 1) / (MOBILE_CARD_H + CARD_GAP)));
           activate(index);
         };
         list.addEventListener('scroll', sync, { passive: true });
         sync();
         return () => list.removeEventListener('scroll', sync);
       }
-      // Product height only reserves document space. It must never change
-      // the sticky top or the positions of cards that have already arrived.
+      // Висота панелі товарів лише резервує місце в документі. Вона не має
+      // зсувати sticky-верх чи позиції карток, які вже стали на місце.
       const measurePanel = () => {
         const height = Math.max(PANEL_H, Math.ceil(panelRef.current?.getBoundingClientRect().height ?? PANEL_H));
         track.style.setProperty('--panel-height', `${height}px`);
       };
       measurePanel();
 
-      // Derive every position from one progress value. Chained fromTo tweens
-      // on the same CSS property can overwrite each other's initial values
-      // during refresh; no tween initialization is needed here.
+      // Усі позиції виводяться з одного значення прогресу. Ланцюжок fromTo-твінів
+      // на одній CSS-властивості під час refresh перезаписує початкові значення
+      // один одному, тому твіни тут не потрібні.
       const renderProgress = (progress: number) => {
         const step = Math.max(0, Math.min(1, progress)) * (STEPS.length - 1);
         const from = Math.min(Math.floor(step), STEPS.length - 1);
@@ -183,7 +183,7 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
   const scrollToCard = (index: number) => {
     if (!window.matchMedia(DESKTOP_QUERY).matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       const list = cardRefs.current[0]?.parentElement;
-      list?.scrollTo({ top: index * (420 + CARD_GAP), behavior: 'smooth' });
+      list?.scrollTo({ top: index * (MOBILE_CARD_H + CARD_GAP), behavior: 'smooth' });
       return;
     }
     const trigger = scrollTriggerRef.current;
@@ -238,6 +238,7 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
           '--panel-height': `${PANEL_H}px`,
           '--track-height': `calc(var(--panel-height) + ${SCROLL_DISTANCE}px)`,
           '--sticky-top': `${STICKY_TOP}px`,
+          '--mobile-card-height': `${MOBILE_CARD_H}px`,
         } as CSSProperties}
       >
         <div className="steps-stage flex flex-col gap-10 lg:sticky lg:top-(--sticky-top) lg:min-h-(--panel-height) lg:flex-row
@@ -249,7 +250,6 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
               <Fragment key={step.number}>
                 <li aria-hidden="true" ref={(node) => { anchorRefs.current[index] = node; }} className="step-anchor h-0 lg:hidden" />
                 <li
-                  key={step.number}
                   ref={(node) => {
                     cardRefs.current[index] = node;
                   }}
@@ -258,7 +258,6 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
                     '--stack-top': `${STACK_TOP_MOBILE + index * STACK_STEP}px`,
                     '--card-height': `${CARD_H}px`,
                     '--initial-y': `${cardPosition(index, 0)}px`,
-                    '--mobile-index': index,
                     zIndex: index,
                   } as CSSProperties}
                 >

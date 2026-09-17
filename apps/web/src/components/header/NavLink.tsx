@@ -13,8 +13,7 @@ export const NavLink = forwardRef<HTMLAnchorElement, Props>(
         ref={ref}
         href={href}
         className="transition-colors hover:text-(--color-accent) focus-visible:outline-2 focus-visible:outline-offset-4 text-[16px]/[1.1] font-bold
-                   text-(--color-ink)"
-        style={{ letterSpacing: 0 }}
+                   tracking-normal text-(--color-ink)"
       >
         {children}
       </Link>

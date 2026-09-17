@@ -117,12 +117,6 @@ describe('MobileSheet', () => {
     expect(document.body.style.overflow).not.toBe('hidden');
   });
 
-  it('shows only products of the active category', () => {
-    renderSheet({ activeCategoryId: 1 });
-    expect(screen.getByText(/Gentle Cleanser/)).toBeDefined();
-    expect(screen.queryByText(/Foaming Wash/)).toBeNull();
-  });
-
   it('names the dialog after the step that opened it', () => {
     renderSheet({ title: 'Shop moisturisers' });
     expect(screen.getByRole('heading', { name: 'Shop moisturisers' })).toBeDefined();
@@ -163,8 +157,8 @@ describe('MobileSheet', () => {
     expect(onRetry).toHaveBeenCalledOnce();
   });
 
-  it('says a category is empty when other products do exist', () => {
-    renderSheet({ activeCategoryId: 99 });
+  it('says a category is empty after a successful empty response', () => {
+    renderSheet({ products: [], productPagination: { loading: false, hasMore: false } });
     expect(screen.getByRole('heading', { name: 'No products here yet' })).toBeDefined();
     expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
   });

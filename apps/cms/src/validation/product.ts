@@ -6,8 +6,8 @@ const object = (value: unknown): value is Data => value !== null && typeof value
 const list = (value: unknown): Data[] => Array.isArray(value) ? value.filter(object) : [];
 const filled = (value: unknown) => value !== undefined && value !== null && value !== '';
 
-// Repeatable component updates may only contain id plus modified fields.
-// Match by id before validation, rather than treating omitted fields as empty.
+// Оновлення repeatable-компонента може містити лише id та змінені поля.
+// Перед валідацією зіставляємо за id, а не вважаємо пропущені поля порожніми.
 export function mergeProduct(previous: unknown, update: unknown): unknown {
   if (Array.isArray(update)) {
     const old = list(previous);

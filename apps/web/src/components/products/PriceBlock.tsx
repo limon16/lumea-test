@@ -15,8 +15,7 @@ export function PriceBlock({ price, compact = false }: Props) {
     >
       {price.hasDiscount && !compact && (
         <span
-          className="text-[14px]/[1] font-bold text-(--color-muted) line-through"
-          style={{ letterSpacing: '-0.02em' }}
+          className="text-[14px]/[1] font-bold tracking-[-0.02em] text-(--color-muted) line-through"
         >
           {formatPrice(price.base)}
         </span>

@@ -6,17 +6,7 @@ import type { Category, Product } from '@lumea/types';
 
 import { optionKeys } from '@/components/ui/optionKeys';
 import { CatalogContent } from './CatalogContent';
-import { filterByCategory } from './filterByCategory';
 import type { LoadMoreProps } from './LoadMore';
-
-const STEP_SHADOW = [
-  '1px 2px 4px 0px #9CB6BA1A',
-  '2px 6px 7px 0px #9CB6BA17',
-  '5px 14px 9px 0px #9CB6BA0D',
-  '8px 26px 11px 0px #9CB6BA03',
-  '13px 40px 12px 0px #9CB6BA00',
-  '-12px -8px 16px 0px #9AADA729',
-].join(', ');
 
 interface StepOption {
   number: string;
@@ -74,8 +64,6 @@ export function MobileSheet({
     };
   }, [open]);
 
-  const visible = filterByCategory(products, activeCategoryId);
-
   return (
     <dialog
       ref={ref}
@@ -112,7 +100,7 @@ export function MobileSheet({
           </svg>
         </button>
 
-        <CatalogContent products={visible} categories={categories} activeId={activeCategoryId} compact
+        <CatalogContent products={products} categories={categories} activeId={activeCategoryId} compact
           onSelect={onCategoryChange} productPagination={productPagination} categoryPagination={categoryPagination} />
 
         <div className="mt-auto flex shrink-0 flex-col gap-4 px-3">
@@ -131,10 +119,9 @@ export function MobileSheet({
                     role="radio"
                     aria-checked={isActive}
                     tabIndex={isActive ? 0 : -1}
-                    style={{ boxShadow: STEP_SHADOW }}
                     className={`flex h-[35px] w-full items-center justify-start
                                 gap-2.5 rounded-[12px] border px-3 py-1.5
-                                text-[18px]/[1.3]
+                                text-[18px]/[1.3] shadow-soft
                                 transition-colors focus-visible:outline-2
                                 focus-visible:outline-offset-2
                                 focus-visible:outline-(--color-accent)
@@ -145,8 +132,7 @@ export function MobileSheet({
                     <span
                       aria-hidden="true"
                       className="relative block h-5 w-[42px] shrink-0 overflow-hidden
-                                 text-center text-[38px]/[1] font-medium text-[#bfbfbf]"
-                      style={{ letterSpacing: '-0.02em' }}
+                                 text-center text-[38px]/[1] font-medium tracking-[-0.02em] text-[#bfbfbf]"
                     >
                       {/* Цифра більша за рамку і зсунута вгору — у макеті так само,
                           верхівка зрізається і лишається характерний знак. */}

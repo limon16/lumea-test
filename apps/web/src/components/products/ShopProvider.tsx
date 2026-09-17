@@ -30,7 +30,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   useLayoutEffect(() => {
     const saved = readShop<CartItem, Product>();
     if (saved !== null) {
-      // Restore browser-only storage before paint without changing the server render.
+      // Відновлюємо збережене до першого кадру, не змінюючи серверний рендер.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCart(saved.cart.map((item) => ({ ...item, unitPrice: resolvePrice(item.product, item.selected).final })));
       setWishlist(saved.wishlist);
@@ -127,10 +127,10 @@ export function ShopProvider({ children }: { children: ReactNode }) {
           )}
           {view === 'search' && <SearchProducts />}
           {view === 'wishlist' && (wishlist.length > 0
-            ? <div className="pt-4"><ProductRail products={wishlist} label="Wishlist products" preview /></div>
+            ? <div className="pt-4"><ProductRail products={wishlist} label="Wishlist products" preview headingLevel="h3" /></div>
             : <ShopEmpty title="Your favourites, all in one place" description="Save a product using its heart button and come back to it here." onBrowse={browse} />)}
           {view === 'menu' && <nav aria-label="Mobile navigation" className="flex flex-col gap-4"><Button onClick={browse} variant="secondary" size="dialog" className="w-full sm:w-auto">Shop skincare</Button><Button onClick={() => show('search')} variant="secondary" size="dialog" className="w-full sm:w-auto">Search products</Button><Button onClick={() => show('wishlist')} variant="secondary" size="dialog" className="w-full sm:w-auto">Wishlist</Button></nav>}
-          {typeof view === 'object' && view && <div className="flex min-w-0 justify-center py-5 sm:px-5"><ProductCard key={view.product.id} product={view.product} initialSelected={view.selected} details /></div>}
+          {typeof view === 'object' && view && <div className="flex min-w-0 justify-center py-5 sm:px-5"><ProductCard key={view.product.id} product={view.product} initialSelected={view.selected} details headingLevel="h3" /></div>}
         </Modal>
       )}
     </ShopContext.Provider>

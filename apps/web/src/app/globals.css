@@ -1,88 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors — extracted from Figma nodes 1:9020 (Hero), 50:3723 (steps section),
-     50:4141 (product card). Named semantically by role, not by hex value. */
-
-  /* Primary near-black with a green tint — main background / text color. */
+  /* Кольори з макета Figma, названі за роллю, а не за значенням. */
   --color-ink: #212721;
-
-  /* Pure white — inverse background / text. */
   --color-paper: #ffffff;
-
-  /* Light section background. */
   --color-surface: #f3f5f5;
-
-  /* Green accent — buttons, highlighted elements. */
   --color-accent: #63cc96;
-
-  /* Secondary/muted text color. */
   --color-muted: #858585;
-
-  /* Muted grey-green, used for subdued UI elements. */
   --color-subtle: #bcc9c5;
-
-  /* Borders and dividers. */
   --color-border: #e3e8e9;
 
-  /* Additional greys seen in the designs. */
-  --color-grey-green: #9aada7;
-  --color-grey: #bfbfbf;
-
-  /* Fonts */
+  /* Inter лише для логотипа, Caveat для рукописного заголовка кроку. */
   --font-sans: var(--font-manrope);
-  /* Inter is the wordmark only; Caveat is the handwritten step headline. */
   --font-wordmark: var(--font-inter);
   --font-accent: var(--font-caveat);
 
-  /* Font sizes from the designs. */
-  --text-xs: 14px;
   --text-sm: 16px;
-  --text-md: 18px;
-  --text-lg: 24px;
   --text-xl: 28px;
-  --text-2xl: 40px;
-  --text-3xl: 125px;
 
-  /* Border radii — most frequent values from the designs. 200/100 are
-     pill-shaped buttons (fully rounded in practice). */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 30px;
-  --radius-pill: 100px;
   --radius-pill-lg: 200px;
 
-  /* Component-specific radii called out in the plan. */
-  --radius-card: 32px;
-  --radius-media: 30px;
-
-  /* Gaps observed across the designs. */
-  --spacing-gap-1: 4px;
-  --spacing-gap-2: 6px;
-  --spacing-gap-3: 8px;
-  --spacing-gap-4: 10px;
-  --spacing-gap-5: 12px;
-  --spacing-gap-6: 16px;
-  --spacing-gap-7: 32px;
-  --spacing-gap-8: 40px;
-
-  /* Paddings observed across the designs. */
-  --spacing-pad-1: 4px;
-  --spacing-pad-2: 6px;
-  --spacing-pad-3: 8px;
-  --spacing-pad-4: 10px;
-  --spacing-pad-5: 12px;
-  --spacing-pad-6: 20px;
-  --spacing-pad-7: 24px;
-  --spacing-pad-8: 40px;
-
-  /* Component sizes from the plan. */
-  --size-step-card: 500px;
-  --size-products-panel: 740px;
-  --size-products-container: 820px;
-  --size-product-card-w: 264px;
-  --size-product-card-h: 632px;
-  --size-product-image: 150px;
+  /* Спільна мʼяка тінь карток, вкладок, чипів і круглих кнопок. */
+  --shadow-soft:
+    1px 2px 4px 0 #9cb6ba1a,
+    2px 6px 7px 0 #9cb6ba17,
+    5px 14px 9px 0 #9cb6ba0d,
+    8px 26px 11px 0 #9cb6ba03,
+    -12px -8px 16px 0 #9aada729;
 }
 
 body {
@@ -91,7 +38,7 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Keep scrollbar tracks transparent on both page and nested scrollers. */
+/* Прозорі доріжки скролбарів на сторінці та у вкладених скролерах. */
 * {
   scrollbar-color: var(--color-subtle) transparent;
 }
@@ -107,7 +54,7 @@ body {
   border-radius: 999px;
 }
 
-/* Smooth scroll for logo click / back-to-card navigation. */
+/* Плавний скрол для кліку на логотип і повернення до картки. */
 html {
   scrollbar-gutter: stable;
   scroll-behavior: smooth;
@@ -125,13 +72,13 @@ html {
   }
 }
 
-/* Mobile products sheet: slide up on open, fade the backdrop in.
-   `allow-discrete` lets the browser animate a dialog that switches between
-   display:none and display:block, so closing is animated too rather than
-   snapping away. Motion stays on transform/opacity. */
+/* Мобільний блок товарів: виїжджає знизу, фон проявляється.
+   `allow-discrete` дозволяє анімувати діалог між display:none і
+   display:block, тож закриття теж анімоване, а не миттєве.
+   Рух лише через transform/opacity. */
 .sheet {
-  /* Geometry lives here rather than in utility classes: a utility layer wins
-     over plain CSS, so the open-state transform would never apply. */
+  /* Геометрія тут, а не в утилітах: шар утиліт переважає звичайний CSS,
+     і transform відкритого стану інакше не спрацював би. */
   margin: 0;
   width: 100%;
   max-width: none;
@@ -184,14 +131,14 @@ html {
   }
 }
 
-/* Server-rendered card positions must match the scroll animation before JS. */
+/* Серверні позиції карток мають збігатися зі скрол-анімацією до запуску JS. */
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   .step-card-row {
     transform: translateY(var(--card-y, var(--initial-y, 0px)));
   }
 }
 
-/* Reduced motion keeps every step in document flow, without the scroll track. */
+/* Reduced motion: усі кроки лишаються в потоці документа, без скрол-треку. */
 @media (prefers-reduced-motion: reduce) {
   .steps-track { height: auto; }
   .steps-stage { position: static; min-height: 0; }
@@ -200,7 +147,7 @@ html {
   .step-anchor { display: block; }
 }
 
-/* Keep modal motion subtle and independent of page layout. */
+/* Поява модалки: рух ледь помітний і не залежить від розкладки сторінки. */
 @media (prefers-reduced-motion: no-preference) {
   .shop-dialog[open] { animation: shop-dialog-enter 180ms ease-out; }
   @keyframes shop-dialog-enter {
@@ -209,13 +156,14 @@ html {
   }
 }
 
-/* Mobile steps scroll within their own 420px viewport, without a page scroll track. */
+/* Мобільні кроки скролять у власному вʼюпорті заввишки з картку
+   (--mobile-card-height задає HowItWorks), без скрол-треку сторінки. */
 @media (width < 1024px) and (prefers-reduced-motion: no-preference) {
   .steps-track { height: auto; }
   .steps-stage { position: static; }
   .steps-list {
     display: flex;
-    height: 420px;
+    height: var(--mobile-card-height);
     max-width: 500px;
     margin-inline: auto;
     overflow-x: hidden;
@@ -234,7 +182,7 @@ html {
   }
   .step-card-row > div { padding-bottom: 24px; }
   .step-card-row:last-child > div { padding-bottom: 0; }
-  .step-card-row article { height: 420px; min-height: 0; }
+  .step-card-row article { height: var(--mobile-card-height); min-height: 0; }
   .step-card-row article > :last-child {
     flex: 1 1 0;
     min-height: 0;
@@ -242,7 +190,7 @@ html {
   }
 }
 
-/* Search states fit the space below the input without a second scroll area. */
+/* Стани пошуку вміщаються під полем без другої зони скролу. */
 .search-products > [aria-busy] {
   min-height: 0;
   flex: 1;

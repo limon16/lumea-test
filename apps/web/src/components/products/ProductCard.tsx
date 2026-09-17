@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import {
-  isInStock, resolvePrice, resolveStock, subKey, type Product,
+  isInStock, isSizeGroup, resolvePrice, resolveStock, subKey, type Product,
 } from '@lumea/types';
 
 import { strapiMedia } from '@/lib/strapi';
@@ -17,12 +17,16 @@ import { activeSelection } from './activeSelection';
 import { cartKey } from './cartKey';
 import { initialSelection } from './initialSelection';
 
+export type ProductHeadingLevel = 'h3' | 'h4';
+
 interface Props {
   product: Product;
   initialSelected?: Record<string, string>;
   details?: boolean;
   compact?: boolean;
   preview?: boolean;
+  /** Рівень заголовка назви: залежить від заголовка контейнера, у якому стоїть картка. */
+  headingLevel?: ProductHeadingLevel;
 }
 
 const LOW_STOCK = 5;
@@ -36,16 +40,9 @@ const HEART_SHADOW = [
   '-12px -40px 30px 0px #9CB6BA1A',
 ].join(', ');
 
-const CARD_SHADOW = [
-  '1px 2px 4px 0px #9CB6BA1A',
-  '2px 6px 7px 0px #9CB6BA17',
-  '5px 14px 9px 0px #9CB6BA0D',
-  '8px 26px 11px 0px #9CB6BA03',
-  '13px 40px 12px 0px #9CB6BA00',
-  '-12px -8px 16px 0px #9AADA729',
-].join(', ');
-
-export function ProductCard({ product, initialSelected, details = false, compact = false, preview = false }: Props) {
+export function ProductCard({
+  product, initialSelected, details = false, compact = false, preview = false, headingLevel: Heading = 'h4',
+}: Props) {
   const [selected, setSelected] = useState<Record<string, string>>(() =>
     initialSelected ?? initialSelection(product.variations),
   );
@@ -65,7 +62,7 @@ export function ProductCard({ product, initialSelected, details = false, compact
   );
 
   if (preview) return (
-    <article className="flex w-[264px] flex-col gap-3 rounded-2xl bg-white p-3" style={{ boxShadow: CARD_SHADOW }}>
+    <article className="flex w-[264px] flex-col gap-3 rounded-2xl bg-white p-3 shadow-soft">
       <div className="relative h-[var(--preview-image-height,clamp(0px,calc(100dvh-420px),160px))] shrink-0 overflow-hidden rounded-xl bg-(--color-surface)">
         {image ? (
           <Image src={image} alt={product.imageAlt ?? product.name} fill sizes="240px" className="object-contain" />
@@ -76,7 +73,7 @@ export function ProductCard({ product, initialSelected, details = false, compact
         )}
       </div>
       <div className="flex items-start gap-2">
-        <h3 className="line-clamp-2 min-h-10 flex-1 text-[16px]/[1.25] font-bold" title={title}>{title}</h3>
+        <Heading className="line-clamp-2 min-h-10 flex-1 text-[16px]/[1.25] font-bold" title={title}>{title}</Heading>
         <button type="button" aria-label={`Remove ${product.name} from wishlist`} onClick={() => shop.toggleWishlist(product)}
           className="flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-surface) text-(--color-ink) focus-visible:outline-2">
           <HeartIcon className="size-[22px] fill-current" />
@@ -89,11 +86,10 @@ export function ProductCard({ product, initialSelected, details = false, compact
 
   return (
     <article
-      className={`flex shrink-0 flex-col break-words bg-(--color-paper)
+      className={`flex shrink-0 flex-col break-words bg-(--color-paper) shadow-soft
                  ${compact
                    ? 'h-[355px] w-[160px] gap-3 rounded-[12px] border border-transparent px-1 pt-1 pb-3 [background:linear-gradient(var(--color-paper),var(--color-paper))_padding-box,linear-gradient(to_bottom,#f3f5f5,#f5fcfd)_border-box]'
                    : 'h-full min-h-[632px] w-[264px] gap-4 rounded-(--radius-md) p-2'}`}
-      style={{ boxShadow: CARD_SHADOW }}
     >
       <div className={`relative w-full shrink-0 overflow-hidden bg-(--color-surface)
                       ${compact
@@ -123,11 +119,10 @@ export function ProductCard({ product, initialSelected, details = false, compact
               <li
                 key={badge.id}
                 className={`flex items-center justify-center whitespace-nowrap
-                           bg-(--color-ink) text-center text-(--color-paper)
+                           bg-(--color-ink) text-center text-(--color-paper) shadow-soft
                            ${compact
                              ? 'rounded-[8px] px-2 py-1 text-[16px]/[1.2]'
                              : 'h-[39px] rounded-(--radius-sm) px-3 py-2 text-[18px]/[1.3] font-bold'}`}
-                style={{ boxShadow: CARD_SHADOW }}
               >
                 {badge.name}
               </li>
@@ -153,7 +148,7 @@ export function ProductCard({ product, initialSelected, details = false, compact
 
       <div className={`flex flex-1 flex-col justify-between pb-1 ${compact ? 'gap-1.5' : 'gap-2'}`}>
         <div className="flex flex-col gap-3">
-          <h4 className={`flex text-(--color-ink)
+          <Heading className={`flex text-(--color-ink)
                          ${compact
                            ? 'h-[57px] flex-col overflow-hidden text-[16px]/[1.2] font-medium'
                            : 'min-h-11 items-start text-[18px]/[1.2] font-bold'}`}>
@@ -165,7 +160,7 @@ export function ProductCard({ product, initialSelected, details = false, compact
                 {sizeLabel !== null && <span className="shrink-0">{sizeLabel}</span>}
               </>
             ) : title}
-          </h4>
+          </Heading>
 
           {!compact && product.variations.length > 0 && (
             <div className="flex flex-col gap-3">
@@ -326,8 +321,6 @@ function StockLine({ stock, available }: StockProps) {
   );
 }
 
-const SIZE_GROUP = /size|volume|\u0454\u043c\u043d\u0456\u0441\u0442/i;
-
 function pickSizeLabel(
   product: Product,
   selected: Record<string, string>,
@@ -339,9 +332,9 @@ function pickSizeLabel(
       ?? variation.values[0];
     if (value === undefined) continue;
 
-    if (SIZE_GROUP.test(variation.label)) return value.label;
+    if (isSizeGroup(variation.label)) return value.label;
 
-    if (value.subValues.length > 0 && SIZE_GROUP.test(value.subLabel ?? '')) {
+    if (value.subValues.length > 0 && isSizeGroup(value.subLabel ?? '')) {
       const sub = value.subValues.find(
         (item) => item.label === selected[subKey(variation.label, value.label)],
       ) ?? value.subValues[0];

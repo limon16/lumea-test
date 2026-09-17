@@ -33,9 +33,8 @@ export function Hero({ header }: Props) {
         <div className="px-[22px] text-center md:px-3.5 md:text-left">
           <h1
             id="hero-heading"
-            className="mt-6 text-[40px]/[0.8] font-bold text-(--color-ink)
+            className="mt-6 text-[40px]/[0.8] font-bold tracking-[-0.02em] text-(--color-ink)
                        md:mt-2 md:text-[clamp(64px,8.68vw,125px)]/[0.8]"
-            style={{ letterSpacing: '-0.02em' }}
           >
             <span className="block">Skincare made</span>
 
@@ -61,31 +60,29 @@ export function Hero({ header }: Props) {
                         md:grid md:grid-cols-[minmax(0,1fr)_246px] md:items-start
                         md:gap-x-10 md:gap-y-0 md:px-3.5
                         lg:grid-cols-[minmax(0,365px)_minmax(0,1fr)_246px]">
-          <div className="flex flex-col gap-[34px] md:gap-8
-                          md:col-span-2 lg:col-span-1 lg:col-start-1">
-            <div className="flex w-fit flex-col items-center gap-2
-                            mx-auto md:mx-0">
-              <p className="text-[18px]/[1.3] font-bold text-black">
-                Not sure what your skin needs?
-              </p>
-              <Button
-                onClick={browse}
-                className="w-full whitespace-nowrap
-                           lg:!px-[clamp(24px,4vw,74px)] lg:!py-[30px] lg:!text-[24px]/[1.2]"
-              >
-                Find your routine
-                <ArrowUpRight className="size-[22px]" />
-              </Button>
-            </div>
+          <div className="flex w-fit flex-col items-center gap-2 mx-auto
+                          md:mx-0 md:col-span-2 lg:col-span-1 lg:col-start-1">
+            <p className="text-[18px]/[1.3] font-bold text-black">
+              Not sure what your skin needs?
+            </p>
+            <Button
+              onClick={browse}
+              className="w-full whitespace-nowrap
+                         lg:!px-[clamp(24px,4vw,74px)] lg:!py-[30px] lg:!text-[24px]/[1.2]"
+            >
+              Find your routine
+              <ArrowUpRight className="size-[22px]" />
+            </Button>
+          </div>
 
-            <div className="w-full max-w-[353px] rounded-xl
-                            border border-white/80 p-2.5 mx-auto md:hidden">
-              <p className="flex h-[58px] w-full max-w-[331px] items-center justify-center
-                            rounded-xl bg-(--color-paper) px-5
-                            text-[16px]/[1.1] font-bold text-[#505050]">
-                {TRUST_LABEL}
-              </p>
-            </div>
+          <div className="mt-0.5 w-full max-w-[353px] rounded-xl border border-white/80 p-2.5 mx-auto
+                          md:col-span-full md:row-start-3 md:ml-auto md:mr-[78px] md:mt-4.5
+                          lg:row-start-2">
+            <p className="flex h-[58px] w-full max-w-[331px] items-center justify-center
+                          rounded-xl bg-(--color-paper) px-5
+                          text-[16px]/[1.1] font-bold text-[#505050]">
+              {TRUST_LABEL}
+            </p>
           </div>
 
           <div className="flex flex-col gap-8 md:col-start-1 md:row-start-2
@@ -136,17 +133,6 @@ export function Hero({ header }: Props) {
                 <ArrowUpRight className="size-[22px]" />
               </Button>
             </article>
-          </div>
-        </div>
-
-        <div className="hidden md:block mr-23">
-          <div className="mt-4.5 w-full max-w-[353px] rounded-xl border border-white/80
-                          p-2.5 ml-auto">
-            <p className="flex h-[58px] w-full max-w-[331px] items-center justify-center
-                          rounded-xl bg-(--color-paper) px-5
-                          text-[16px]/[1.1] font-bold text-[#505050]">
-              {TRUST_LABEL}
-            </p>
           </div>
         </div>
       </div>

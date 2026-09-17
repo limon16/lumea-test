@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    // Component tests render into a DOM; the pure-function suites do not care.
+    // Тести компонентів рендерять у DOM; наборам чистих функцій середовище байдуже.
     environment: 'jsdom',
   },
   resolve: {

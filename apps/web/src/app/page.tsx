@@ -18,7 +18,7 @@ export default async function Home() {
     getCategoryPage(), getAnnouncements(),
   ]);
   let categories = firstCategories;
-  // Load through the saved category so pagination and tab order stay consistent.
+  // Довантажуємо сторінки до збереженої категорії, щоб пагінація і порядок вкладок не розійшлися.
   if (Number.isSafeInteger(savedId) && savedId > 0) {
     while (!categories.error && !categories.items.some((item) => item.id === savedId)
       && categories.page < categories.pageCount) {
@@ -33,7 +33,7 @@ export default async function Home() {
   return (
     <ShopProvider>
     <div id="top">
-      <main className="pb-[30px] min-[769px]:pb-[140px]">
+      <main className="pb-[30px] md:pb-[140px]">
         <Hero header={<Header messages={announcements} />} />
         <div className="mx-auto w-full max-w-[1308px] px-[14px]">
           <HowItWorks initialProducts={products} initialCategories={categories} selectedCategoryId={category?.id} />

@@ -14,8 +14,7 @@ interface Props {
 const NAV_ITEMS = ['Shop', 'Skincare', 'Sets', 'About'];
 
 const ICON_BUTTON_CLASS =
-  'flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-paper)'
-  + ' shadow-[1px_2px_4px_0px_#9CB6BA1A,2px_6px_7px_0px_#9CB6BA17,5px_14px_9px_0px_#9CB6BA0D,8px_26px_11px_0px_#9CB6BA03,-12px_-8px_16px_0px_#9AADA729]'
+  'flex size-10 shrink-0 items-center justify-center rounded-full bg-(--color-paper) shadow-soft'
   + ' text-(--color-ink) transition-colors hover:text-(--color-accent) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-ink)';
 
 export function Header({ messages }: Props) {
@@ -29,9 +28,8 @@ export function Header({ messages }: Props) {
         <a
           href="#top"
           className="hidden shrink-0 font-(family-name:--font-wordmark)
-                     text-[28px] min-[769px]:block md:text-[40px] font-bold
+                     text-[28px] tracking-normal md:block md:text-[40px] font-bold
                      text-(--color-ink) focus-visible:outline-2"
-          style={{ letterSpacing: 0 }}
         >
           LUMEA
         </a>

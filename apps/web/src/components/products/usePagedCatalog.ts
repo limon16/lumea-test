@@ -1,17 +1,19 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { emptyPage, type CatalogPage } from '@/lib/catalog';
 
 type Entry<T> = CatalogPage<T> & { loading?: boolean };
 
-// Each category has its own cache and request. Late responses cannot replace
-// the currently selected category; desktop and mobile share this hook's state.
+// У кожної категорії власний кеш і запит: пізня відповідь не підмінить
+// вибрану категорію. Desktop і mobile працюють з одним станом хука.
 export function usePagedCatalog<T extends { id: number }>(url: string, initial?: CatalogPage<T>, initialUrl = url) {
-  const cache = useRef<Record<string, Entry<T>>>(initial ? { [initialUrl]: initial } : {});
+  const [entries, setEntries] = useState<Record<string, Entry<T>>>(() => initial ? { [initialUrl]: initial } : {});
+  const cache = useRef(entries);
   const requests = useRef(new Map<string, AbortController>());
-  const [entries, setEntries] = useState(cache.current);
-  const [activeUrl, setActiveUrl] = useState<string | null>(initial?.error ? null : url);
+  // Останній url, для якого вже вирішено, чи потрібен запит. Початкова
+  // серверна помилка має перевірятися заново, тому не вважається вирішеною.
+  const decidedUrl = useRef<string | null>(initial?.error ? null : url);
   const load = useCallback(async (key: string, retry = false) => {
     const previous = cache.current[key] ?? emptyPage<T>();
     if (requests.current.has(key) || (previous.page > 0 && previous.page >= previous.pageCount)) return;
@@ -31,7 +33,7 @@ export function usePagedCatalog<T extends { id: number }>(url: string, initial?:
       if (next.error) throw new Error(next.error);
       const merged = new Map(previous.items.map((item) => [item.id, item]));
       next.items.forEach((item) => merged.set(item.id, item));
-      // Keep a fast empty response from flashing the initial loader.
+      // Швидка порожня відповідь не має блимати початковим лоадером.
       const remaining = 300 - (Date.now() - startedAt);
       if (merged.size === 0 && remaining > 0) {
         await new Promise<void>((resolve) => {
@@ -52,20 +54,19 @@ export function usePagedCatalog<T extends { id: number }>(url: string, initial?:
       if (requests.current.get(key) === controller) requests.current.delete(key);
     }
   }, []);
-  useEffect(() => {
-    const changed = activeUrl !== url;
-    if (changed) setActiveUrl(url);
+  // Layout-ефект: стан «завантаження» публікується до першого кадру, тож
+  // стара помилка категорії не встигає промайнути перед новим запитом.
+  useLayoutEffect(() => {
+    const changed = decidedUrl.current !== url;
+    decidedUrl.current = url;
     const cached = cache.current[url];
     if (!cached || (changed && cached.error) || (cached.loading && !requests.current.has(url))) void load(url);
-  }, [url, load, activeUrl]);
+  }, [url, load]);
   useEffect(() => {
     const pending = requests.current;
     return () => { pending.forEach((controller) => controller.abort()); pending.clear(); };
   }, []);
-  const cached = entries[url];
-  // Do not briefly display an old failure before the category's new request starts.
-  const entry = cached && !(activeUrl !== url && cached.error)
-    ? cached : { ...emptyPage<T>(), loading: true };
+  const entry = entries[url] ?? { ...emptyPage<T>(), loading: true };
   const loadMore = useCallback(() => { void load(url, true); }, [load, url]);
   return { ...entry, hasMore: entry.page < entry.pageCount, loadMore };
 }

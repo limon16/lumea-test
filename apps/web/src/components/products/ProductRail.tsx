@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef } from 'react';
 import type { Product } from '@lumea/types';
-import { ProductCard } from './ProductCard';
+import { ProductCard, type ProductHeadingLevel } from './ProductCard';
 import { LoadMore, type LoadMoreProps } from './LoadMore';
 
 interface Props extends LoadMoreProps {
@@ -10,10 +10,10 @@ interface Props extends LoadMoreProps {
   label: string;
   compact?: boolean;
   preview?: boolean;
-  emptyMessage?: string;
+  headingLevel?: ProductHeadingLevel;
 }
 
-export function ProductRail({ products, label, compact = false, preview = false, emptyMessage = 'No products found.', ...pagination }: Props) {
+export function ProductRail({ products, label, compact = false, preview = false, headingLevel, ...pagination }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLUListElement>(null);
   const scrollbarRef = useRef<HTMLDivElement>(null);
@@ -48,24 +48,18 @@ export function ProductRail({ products, label, compact = false, preview = false,
           ${compact ? 'scroll-pl-2.5' : 'overflow-y-hidden scroll-px-10'}
           [scrollbar-width:none] [&::-webkit-scrollbar]:hidden outline-none
           focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--color-muted)`}>
-        {products.length > 0 || pending ? (
-          <ul ref={contentRef} className={`flex w-max min-w-full list-none items-stretch
-            ${compact ? 'gap-2 pl-2.5 pr-[22px] pt-[5px] pb-12' : 'gap-3 px-10 pt-8 pb-12'}`}>
-            {products.map((product) => (
-              <li key={product.id} className={`flex shrink-0 snap-start ${compact ? 'w-[160px]' : 'w-[264px]'}`}>
-                <ProductCard product={product} compact={compact} preview={preview} />
-              </li>
-            ))}
-            {pending && <li className={`flex shrink-0 ${compact ? 'w-[160px]' : preview ? 'w-[264px]' : 'min-h-[632px] w-[264px]'}`}><LoadMore {...pagination} /></li>}
-          </ul>
-        ) : (
-          <p className="ml-10 mt-8 mb-12 flex min-h-48 items-center justify-center rounded-3xl bg-(--color-surface) px-6 text-center">
-            {emptyMessage}
-          </p>
-        )}
+        <ul ref={contentRef} className={`flex w-max min-w-full list-none items-stretch
+          ${compact ? 'gap-2 pl-2.5 pr-[22px] pt-[5px] pb-12' : 'gap-3 px-10 pt-8 pb-12'}`}>
+          {products.map((product) => (
+            <li key={product.id} className={`flex shrink-0 snap-start ${compact ? 'w-[160px]' : 'w-[264px]'}`}>
+              <ProductCard product={product} compact={compact} preview={preview} headingLevel={headingLevel} />
+            </li>
+          ))}
+          {pending && <li className={`flex shrink-0 ${compact ? 'w-[160px]' : preview ? 'w-[264px]' : 'min-h-[632px] w-[264px]'}`}><LoadMore {...pagination} /></li>}
+        </ul>
       </div>
-      {/* A second native scroll surface places the scrollbar 12px below the
-          cards while their shadows retain 48px of unclipped painting space. */}
+      {/* Друга нативна зона скролу ставить скролбар на 12px нижче карток,
+          а їхнім тіням лишається 48px незрізаного простору. */}
       <div ref={scrollbarRef} aria-hidden="true" tabIndex={-1}
         style={{ visibility: 'hidden' }}
         onScroll={(event) => sync(event.currentTarget, viewportRef.current)}

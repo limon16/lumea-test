@@ -34,7 +34,7 @@ export function CatalogState({ state, onRetry, retrying = false }: Props) {
           )}
         </svg>
       </div>
-      {/* Overlapping text reserves the tallest message at every width and zoom level. */}
+      {/* Накладені тексти резервують висоту найдовшого повідомлення за будь-якої ширини та масштабу. */}
       <div role="status" aria-live="polite" className="flex w-full max-w-[350px] flex-col gap-2">
         <h3 className="grid text-[22px]/[1.2] font-bold text-(--color-ink)">
           {Object.entries(messages).map(([key, message]) => (

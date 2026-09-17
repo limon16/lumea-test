@@ -46,8 +46,8 @@ export function usePromoCode(cart: CartItem[]) {
     return () => controller.abort();
   }, [code, items, key]);
   const current = result?.key === key ? result : null;
-  // Keep the last verified amounts visible while checking a code for this cart.
-  // Checkout still requires a fresh successful response via `ready` below.
+  // Поки код для цього кошика перевіряється, показуємо останні підтверджені суми.
+  // Оформлення все одно вимагає свіжої успішної відповіді через `ready` нижче.
   const previousQuote = lastQuote?.items === items ? lastQuote.quote : undefined;
   const displayQuote = current?.quote ?? (previousQuote && !code
     ? { ...previousQuote, promoCode: null, discountAmount: 0, total: previousQuote.subtotal }

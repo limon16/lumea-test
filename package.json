@@ -13,7 +13,6 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "db:up": "docker compose up -d --wait",
-    "db:down": "docker compose down",
     "stop": "docker compose down"
   }
 }

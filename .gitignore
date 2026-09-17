@@ -12,3 +12,4 @@ apps/web/AGENTS.md
 apps/web/CLAUDE.md
 .idea/
 .claude/launch.json
+.strapi-updater.json

@@ -26,7 +26,7 @@ export function SearchProducts() {
       </label>
       {loading && results.items.length === 0 || query.trim() !== search ? <CatalogState state="loading" />
         : results.items.length === 0 ? <CatalogState state={results.error ? 'unavailable' : 'empty'} onRetry={results.error ? results.loadMore : undefined} />
-        : <ProductRail key={search} products={results.items} label="Search results" preview
+        : <ProductRail key={search} products={results.items} label="Search results" preview headingLevel="h3"
             loading={results.loading} error={results.error} hasMore={results.hasMore} onLoadMore={results.loadMore} />}
     </div>
   );
