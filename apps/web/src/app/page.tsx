@@ -33,9 +33,9 @@ export default async function Home() {
   return (
     <ShopProvider>
     <div id="top">
-      <main className="pb-[30px] md:pb-[140px]">
+      <main className="pb-[35px] md:pb-[140px] ">
         <Hero header={<Header messages={announcements} />} />
-        <div className="mx-auto w-full max-w-[1308px] px-[14px]">
+        <div className="mx-auto w-full px-[14px] max-w-[1308px]">
           <HowItWorks initialProducts={products} initialCategories={categories} selectedCategoryId={category?.id} />
         </div>
       </main>

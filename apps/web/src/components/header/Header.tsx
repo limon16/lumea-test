@@ -23,7 +23,7 @@ export function Header({ messages }: Props) {
     <header className="relative z-20 flex flex-col gap-2 md:gap-3">
       <AnnouncementBar messages={messages} />
       <div
-        className="flex h-11 items-center justify-between md:h-[78px]"
+        className="mx-[3.5px] flex h-[50px] items-center justify-between md:mx-0 md:h-[78px]"
       >
         <a
           href="#top"
@@ -50,7 +50,7 @@ export function Header({ messages }: Props) {
             type="button"
             aria-label="Menu"
             onClick={() => shop.show('menu')}
-            className={`${ICON_BUTTON_CLASS} bg-[#bcc9c5] md:hidden`}
+            className={`${ICON_BUTTON_CLASS} size-11 bg-[#bcc9c5] md:hidden`}
           >
             <BurgerIcon className="size-6" />
           </button>

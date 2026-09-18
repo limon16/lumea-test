@@ -29,8 +29,6 @@ interface Props {
   headingLevel?: ProductHeadingLevel;
 }
 
-const LOW_STOCK = 5;
-
 const HEART_SHADOW = [
   '1px 2px 4px 0px #9CB6BA14',
   '-8px 12px 12px 0px #9CB6BA17',
@@ -302,22 +300,12 @@ interface StockProps {
 }
 
 function StockLine({ stock, available }: StockProps) {
-  if (stock === null) return null;
+  if (stock === null || available) return null;
 
-  if (!available) {
-    return (
-      <p className="text-[14px]/[1] font-bold text-(--color-muted)">
-        Out of stock
-      </p>
-    );
-  }
-
-  return stock <= LOW_STOCK ? (
-    <p className="text-[14px]/[1] font-bold text-[#b4381f]">
-      Only {stock} left
+  return (
+    <p className="text-[14px]/[1] font-bold text-(--color-muted)">
+      Out of stock
     </p>
-  ) : (
-    <p className="text-[14px]/[1] font-bold text-[#1b3829]">In stock</p>
   );
 }
 

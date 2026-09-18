@@ -39,10 +39,10 @@ const STICKY_TOP = 40;
 const SCROLL_PER_CARD = 420;
 const SCROLL_DISTANCE = (STEPS.length - 1) * SCROLL_PER_CARD;
 
-function cardPosition(index: number, active: number): number {
+function cardPosition(index: number, active: number, height = CARD_H): number {
   return index <= active
     ? index * COLLAPSED_PEEK
-    : active * COLLAPSED_PEEK + (index - active) * (CARD_H + CARD_GAP);
+    : active * COLLAPSED_PEEK + (index - active) * (height + CARD_GAP);
 }
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -207,11 +207,11 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-heading"
-      className="mt-24 flex flex-col gap-10 md:mt-25.5 md:gap-20"
+      className="mt-[137px] flex flex-col gap-10 md:mt-25.5 md:gap-20"
     >
       <header
         className="mx-auto flex w-full max-w-[661px] flex-col items-center
-                   justify-center gap-3 rounded-[20px] px-4 py-3 text-center
+                   justify-center gap-3 rounded-[20px] px-0 py-0 text-center
                    md:shadow-[1px_2px_4px_0px_#9CB6BA14,-8px_12px_12px_0px_#9CB6BA17,12px_20px_16px_0px_#9CB6BA17,8px_26px_14px_0px_#9CB6BA17,-20px_40px_30px_0px_#9CB6BA0F,-12px_-40px_30px_0px_#9CB6BA1A]
                    md:h-32 md:rounded-(--radius-pill-lg) md:px-40 md:py-7
                    md:bg-[linear-gradient(to_right,#f3f5f5,#f5fcfd)]"
@@ -225,7 +225,7 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
           <StarIcon className="size-8 shrink-0" />
           <span className="text-(--color-accent)">works</span>
         </h2>
-        <p className="max-w-[219px] text-[18px]/[1.2] font-medium text-[#505050]
+        <p className="max-w-[219px] text-[18px]/[22px] font-medium md:leading-[1.2] text-[#505050]
                       md:max-w-none md:font-bold">
           4 simple steps to healthier-looking skin
         </p>

@@ -17,7 +17,7 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
   return (
     <article
       aria-current={isActive ? 'step' : undefined}
-      className={`relative mx-auto flex w-full flex-col md:max-w-[500px]
+      className={`step-card relative mx-auto flex w-full flex-col md:max-w-[500px]
                   rounded-[32px] p-6 ring-1 ring-[#63cc96]/40
                   md:p-10 ${step.background}
                   lg:h-[546px] lg:w-[500px] lg:shrink-0
@@ -56,8 +56,9 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
           </p>
         </div>
 
-        <p className="max-w-[320px] text-[18px]/[1.3] font-bold tracking-normal
-                      text-[#858585]">
+        <p className="text-[18px]/[1.3] font-bold tracking-normal
+                      text-[#858585]"
+          style={{ maxWidth: step.descriptionMaxWidth }}>
           {step.description}
         </p>
       </div>

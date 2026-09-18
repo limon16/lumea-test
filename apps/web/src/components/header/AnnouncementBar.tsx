@@ -26,7 +26,7 @@ export function AnnouncementBar({ messages }: Props) {
     <div
       className="relative mx-auto grid w-full min-h-11 max-w-full
                  place-items-center overflow-hidden bg-(--color-ink) px-5
-                 py-[10px] text-center text-[16px]/[1.1] font-bold tracking-normal
+                 py-[10px] text-center text-[16px]/[1.1] font-normal md:font-bold tracking-normal
                  text-(--color-paper)
                  md:w-[458px] md:max-w-full"
       aria-live="polite"

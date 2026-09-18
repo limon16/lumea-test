@@ -29,7 +29,7 @@ export function CategoryTabs({ categories, activeId, onSelect, compact = false, 
             role="group"
             aria-label="Product categories"
             className={`flex w-fit items-center rounded-(--radius-pill-lg)
-                       ${compact ? 'gap-3 p-1' : 'gap-6 p-1'}`}
+                       ${compact ? 'gap-3 p-1' : 'gap-6 p-1 lg:p-[3px]'}`}
           >
             {categories.map((category) => {
               const isActive = category.id === activeId;
