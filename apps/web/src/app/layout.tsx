@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "LUMEA",
     images: [
       {
-        url: "/og-image.png?v=1",
+        url: "/og-image.png?v=3",
         width: 1200,
         height: 630,
         alt: "LUMEA — Skincare made simple",
