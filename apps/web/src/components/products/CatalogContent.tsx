@@ -12,9 +12,10 @@ interface Props {
   productPagination?: LoadMoreProps;
   categoryPagination?: LoadMoreProps;
   compact?: boolean;
+  detachedShadows?: boolean;
 }
 
-export function CatalogContent({ products, categories, activeId, onSelect, productPagination, categoryPagination, compact = false }: Props) {
+export function CatalogContent({ products, categories, activeId, onSelect, productPagination, categoryPagination, compact = false, detachedShadows = false }: Props) {
   if (categories.length === 0) {
     return <CatalogState
       state={categoryPagination?.loading ? 'loading' : categoryPagination?.error ? 'unavailable' : 'empty'}
@@ -34,7 +35,7 @@ export function CatalogContent({ products, categories, activeId, onSelect, produ
             onRetry={productPagination?.error ? productPagination.onLoadMore : undefined} />
         </div>
       ) : (
-        <ProductRail key={activeId} products={products} compact={compact}
+        <ProductRail key={activeId} products={products} compact={compact} detachedShadows={detachedShadows}
           label={category ? `${category.name} products` : 'Products'} {...productPagination} />
       )}
     </div>

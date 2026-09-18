@@ -49,10 +49,10 @@ export function ProductCard({
 
   const shop = useShop();
   const saved = shop.wishlist.some((item) => item.id === product.id);
-  const sizeLabel = pickSizeLabel(product, selected);
-  const title = sizeLabel === null
+  const subtitle = pickSubtitle(product, selected);
+  const title = subtitle === null
     ? product.name
-    : `${product.name} ${sizeLabel}`;
+    : `${product.name} ${subtitle}`;
   const price = resolvePrice(product, selected);
   const stock = resolveStock(product, selected);
   const available = isInStock(product, selected);
@@ -148,18 +148,18 @@ export function ProductCard({
 
       <div className={`flex flex-1 flex-col justify-between pb-1 ${compact ? 'gap-1.5' : 'gap-2'}`}>
         <div className="flex flex-col gap-3">
-          <Heading className={`flex text-(--color-ink)
+          <Heading className={`flex flex-col text-(--color-ink)
                          ${compact
-                           ? 'h-[57px] flex-col overflow-hidden text-[16px]/[1.2] font-medium'
-                           : 'min-h-11 items-start text-[18px]/[1.2] font-bold'}`}>
-            {compact ? (
-              <>
-                {/* Назва — не більше двох рядків, решта в «…»; ємність завжди
-                    лишається видимою третім рядком. */}
-                <span className="line-clamp-2">{product.name}</span>
-                {sizeLabel !== null && <span className="shrink-0">{sizeLabel}</span>}
-              </>
-            ) : title}
+                           ? 'h-[57px] overflow-hidden text-[16px]/[1.2] font-medium'
+                           : 'min-h-11 items-start text-[18px]/[1.2] font-bold'}`}
+            title={title}>
+            {/* Назва — не більше двох рядків, решта в «…»; підзаголовок
+                (ємність, кількість у наборі тощо) завжди лишається
+                видимим окремим рядком. */}
+            <span className={compact ? 'line-clamp-2' : 'line-clamp-1'}>
+              {product.name}
+            </span>
+            {subtitle !== null && <span className="shrink-0">{subtitle}</span>}
           </Heading>
 
           {!compact && product.variations.length > 0 && (
@@ -321,11 +321,11 @@ function StockLine({ stock, available }: StockProps) {
   );
 }
 
-function pickSizeLabel(
+function pickSubtitle(
   product: Product,
   selected: Record<string, string>,
 ): string | null {
-  if (product.volumeMode === 'single') return product.volume;
+  if (product.subtitleMode === 'single') return product.subtitle;
 
   for (const variation of product.variations) {
     const value = variation.values.find((v) => v.label === selected[variation.label])

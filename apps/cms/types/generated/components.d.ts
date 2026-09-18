@@ -107,6 +107,7 @@ export interface ProductVariationValue extends Struct.ComponentSchema {
         },
         number
       >;
+    image: Schema.Attribute.Media<'images'>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
     priceOverride: Schema.Attribute.Decimal &
       Schema.Attribute.SetMinMax<

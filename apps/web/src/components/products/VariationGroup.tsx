@@ -1,3 +1,6 @@
+import Image from 'next/image';
+
+import { strapiMedia } from '@/lib/strapi';
 import { optionKeys } from '@/components/ui/optionKeys';
 import { isSizeGroup, subKey, type Variation } from '@lumea/types';
 
@@ -32,6 +35,7 @@ export function VariationGroup({ variation, selected, onSelect }: Props) {
               key={value.label}
               depth={index}
               label={value.label}
+              imageUrl={value.imageUrl}
               discountPercent={value.discountPercent}
               isSelected={value.label === activeLabel}
               wide={!isInlineGroup(variation.label)}
@@ -86,6 +90,7 @@ function ChipRow({ label, children }: RowProps) {
 
 interface ChipProps {
   label: string;
+  imageUrl?: string | null;
   discountPercent: number | null;
   isSelected: boolean;
   wide: boolean;
@@ -94,9 +99,10 @@ interface ChipProps {
 }
 
 function Chip({
-  label, discountPercent, isSelected, wide, depth, onClick,
+  label, imageUrl = null, discountPercent, isSelected, wide, depth, onClick,
 }: ChipProps) {
   const hasDiscount = discountPercent !== null && discountPercent > 0;
+  const image = strapiMedia(imageUrl);
 
   return (
     <button
@@ -118,6 +124,11 @@ function Chip({
                     ? 'bg-(--color-subtle) text-[#1b3829]'
                     : 'bg-(--color-paper) text-(--color-ink)'}`}
     >
+      {image !== null && (
+        <span className="relative block size-7 shrink-0 overflow-hidden rounded-(--radius-sm)">
+          <Image src={image} alt="" fill sizes="28px" className="object-cover" />
+        </span>
+      )}
       {label}
       {hasDiscount && (
         <span

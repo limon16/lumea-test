@@ -6,7 +6,7 @@ import { usePromoCode } from './usePromoCode';
 import { PromoCodeField } from './PromoCodeField';
 import type { CartItem } from './shopContext';
 
-const product: Product = { id: 1, name: 'Cleanser', volumeMode: 'single', volume: null, priceMode: 'single', stock: null, imageUrl: null, imageAlt: null, price: 100, discountPercent: null, discountedPrice: null, badges: [], variations: [], categoryIds: [] };
+const product: Product = { id: 1, name: 'Cleanser', subtitleMode: 'single', subtitle: null, priceMode: 'single', stock: null, imageUrl: null, imageAlt: null, price: 100, discountPercent: null, discountedPrice: null, badges: [], variations: [], categoryIds: [] };
 const cart = (quantity = 1): CartItem[] => [{ key: '1', product, selected: {}, quantity, unitPrice: 100, stock: null }];
 const response = (total = 85, code: string | null = 'SAVE15', unavailableItems: { index: number; productId: number }[] = []) => ({ ok: true, json: async () => ({ data: { promoCode: code, subtotal: total / .85, discountAmount: total / .85 - total, total, unavailableItems } }) });
 function deferred() { let resolve!: (value: ReturnType<typeof response>) => void; const promise = new Promise<ReturnType<typeof response>>(r => { resolve = r; }); return { promise, resolve }; }

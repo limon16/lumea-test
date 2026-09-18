@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { normalizeProduct, normalizeProducts } from './normalize';
 
 const raw = {
-  id: 1, name: 'Serum', volumeMode: 'single', volume: '30 ml',
+  id: 1, name: 'Serum', subtitleMode: 'single', subtitle: '30 ml',
   priceMode: 'single', price: '28.00',
   discountPercent: 15, discountedPrice: null,
   badges: [{ id: 7, name: 'Sale', order: 0 }],
@@ -23,21 +23,21 @@ describe('normalizeProduct', () => {
     expect(p.variations[0]!.values[0]!.label).toBe('30 ml');
     expect(p.imageUrl).toBe('/uploads/a.png');
     expect(p.categoryIds).toEqual([3]);
-    expect(p.volume).toBe('30 ml');
+    expect(p.subtitle).toBe('30 ml');
   });
 
-  it('читає режим ємності byVariation і не тримає власної ємності', () => {
+  it('читає режим підзаголовка byVariation і не тримає власного підзаголовка', () => {
     const p = normalizeProduct({
-      ...raw, volumeMode: 'byVariation', volume: '30 ml',
+      ...raw, subtitleMode: 'byVariation', subtitle: '30 ml',
     })!;
-    expect(p.volumeMode).toBe('byVariation');
-    expect(p.volume).toBeNull();
+    expect(p.subtitleMode).toBe('byVariation');
+    expect(p.subtitle).toBeNull();
   });
 
-  it('лишає товар без ємності придатним — старі записи не зникають', () => {
-    const p = normalizeProduct({ ...raw, volume: null })!;
-    expect(p.volumeMode).toBe('single');
-    expect(p.volume).toBeNull();
+  it('лишає товар без підзаголовка придатним — старі записи не зникають', () => {
+    const p = normalizeProduct({ ...raw, subtitle: null })!;
+    expect(p.subtitleMode).toBe('single');
+    expect(p.subtitle).toBeNull();
   });
 
   it('витримує відсутні варіації, badges і зображення', () => {
@@ -46,7 +46,7 @@ describe('normalizeProduct', () => {
     expect(p.badges).toEqual([]);
     expect(p.imageUrl).toBeNull();
     expect(p.priceMode).toBe('single');
-    expect(p.volumeMode).toBe('single');
+    expect(p.subtitleMode).toBe('single');
   });
 
   it('повертає null без назви або ціни', () => {

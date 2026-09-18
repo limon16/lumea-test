@@ -24,18 +24,18 @@ export function mergeProduct(previous: unknown, update: unknown): unknown {
 const SIZE_GROUP = /size|volume|ємніст/i;
 const label = (source: Data, key: string) => typeof source[key] === 'string' ? source[key] : '';
 
-function validateVolume(input: Data, groups: Data[], values: Data[]): void {
-  const mode = input.volumeMode ?? 'single';
+function validateSubtitle(input: Data, groups: Data[], values: Data[]): void {
+  const mode = input.subtitleMode ?? 'single';
   const hasSizeGroup = groups.some((group) => SIZE_GROUP.test(label(group, 'label')))
     || values.some((value) => SIZE_GROUP.test(label(value, 'subLabel')));
 
   if (mode === 'single') {
-    if (!filled(input.volume)) throw new ApplicationError('Вкажіть ємність товару, напр. «30 ml».');
-    if (hasSizeGroup) throw new ApplicationError('Товар має варіацію ємності — переставте тип ємності на «Ємність залежить від варіації».');
+    if (!filled(input.subtitle)) throw new ApplicationError('Вкажіть підзаголовок товару, напр. «30 ml» або «3 products».');
+    if (hasSizeGroup) throw new ApplicationError('Товар має варіацію ємності — переставте тип підзаголовка на «Підзаголовок залежить від варіації».');
   } else if (mode === 'byVariation') {
-    if (filled(input.volume)) throw new ApplicationError('У режимі byVariation приберіть поле ємності — її задають варіанти.');
-    if (!hasSizeGroup) throw new ApplicationError('Додайте варіацію ємності («Size») або переставте тип ємності на «Одна ємність».');
-  } else throw new ApplicationError('Некоректний тип ємності.');
+    if (filled(input.subtitle)) throw new ApplicationError('У режимі byVariation приберіть поле підзаголовка — його задають варіанти.');
+    if (!hasSizeGroup) throw new ApplicationError('Додайте варіацію ємності («Size») або переставте тип підзаголовка на «Один підзаголовок».');
+  } else throw new ApplicationError('Некоректний тип підзаголовка.');
 }
 
 export function validateProduct(input: unknown): void {
@@ -43,7 +43,7 @@ export function validateProduct(input: unknown): void {
   const mode = input.priceMode ?? 'single';
   const groups = list(input.variations);
   const values = groups.flatMap((group) => list(group.values));
-  validateVolume(input, groups, values);
+  validateSubtitle(input, groups, values);
   const sources = [input, ...values, ...values.flatMap((value) => list(value.subValues))];
   for (const source of sources) {
     for (const field of ['price', 'priceOverride', 'discountedPrice', 'discountPercent', 'stock']) {

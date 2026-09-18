@@ -1,6 +1,6 @@
 import type {
-  Badge, Category, PriceMode, Product, SubValue, Variation, VariationValue,
-  VolumeMode,
+  Badge, Category, PriceMode, Product, SubtitleMode, SubValue, Variation,
+  VariationValue,
 } from './product';
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
@@ -38,8 +38,10 @@ function toValue(raw: unknown): VariationValue | null {
   const subValues = (Array.isArray(raw.subValues) ? raw.subValues : [])
     .map(toSubValue)
     .filter((v): v is SubValue => v !== null);
+  const image = isRecord(raw.image) ? raw.image : null;
   return {
     label,
+    imageUrl: image ? str(image.url) : null,
     priceOverride: num(raw.priceOverride),
     discountPercent: num(raw.discountPercent),
     discountedPrice: num(raw.discountedPrice),
@@ -78,8 +80,8 @@ export function normalizeProduct(raw: unknown): Product | null {
   const priceMode: PriceMode =
     raw.priceMode === 'byVariation' ? 'byVariation' : 'single';
 
-  const volumeMode: VolumeMode =
-    raw.volumeMode === 'byVariation' ? 'byVariation' : 'single';
+  const subtitleMode: SubtitleMode =
+    raw.subtitleMode === 'byVariation' ? 'byVariation' : 'single';
 
   const variations = (Array.isArray(raw.variations) ? raw.variations : [])
     .map(toVariation)
@@ -101,8 +103,8 @@ export function normalizeProduct(raw: unknown): Product | null {
     name,
     imageUrl: image ? str(image.url) : null,
     imageAlt: image ? str(image.alternativeText) : null,
-    volumeMode,
-    volume: volumeMode === 'single' ? str(raw.volume) : null,
+    subtitleMode,
+    subtitle: subtitleMode === 'single' ? str(raw.subtitle) : null,
     priceMode,
     price,
     discountPercent: num(raw.discountPercent),

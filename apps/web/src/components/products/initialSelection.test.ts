@@ -5,6 +5,7 @@ import { initialSelection } from './initialSelection';
 
 const value = (label: string, over = {}) => ({
   label,
+  imageUrl: null,
   priceOverride: null,
   discountPercent: null,
   discountedPrice: null,

@@ -5,7 +5,7 @@
     "singularName": "product",
     "pluralName": "products",
     "displayName": "Товар",
-    "description": "Товар каталогу. Ємності задаються варіацією «Size» — кожна зі своєю ціною та знижкою."
+    "description": "Товар каталогу. Ємності чи склад набору задаються варіацією «Size» — кожна зі своєю ціною та знижкою."
   },
   "options": {
     "draftAndPublish": false
@@ -16,7 +16,7 @@
       "required": true,
       "description": "Назва товару без ємності, напр. «Daily Moisturiser». Ємність додається окремо — полем «Ємність» або варіацією."
     },
-    "volumeMode": {
+    "subtitleMode": {
       "type": "enumeration",
       "enum": [
         "single",
@@ -24,16 +24,16 @@
       ],
       "default": "single",
       "required": true,
-      "description": "«single» — товар однієї ємності, вкажіть її у полі нижче. «byVariation» — ємність обирає покупець у варіації «Size», тоді поле нижче не заповнюється."
+      "description": "«single» — товар з одним підзаголовком, вкажіть його у полі нижче (напр. ємність «30 ml» або «3 products» для набору). «byVariation» — підзаголовок обирає покупець у варіації «Size», тоді поле нижче не заповнюється."
     },
-    "volume": {
+    "subtitle": {
       "type": "string",
-      "description": "Ємність товару з одиницями, напр. «30 ml». Показується в назві на картці. Обовʼязкове, коли ємність одна.",
+      "description": "Підзаголовок товару, показується в назві на картці: ємність з одиницями («30 ml») або кількість для наборів («3 products»). Обовʼязкове, коли підзаголовок один.",
       "conditions": {
         "visible": {
           "==": [
             {
-              "var": "volumeMode"
+              "var": "subtitleMode"
             },
             "single"
           ]

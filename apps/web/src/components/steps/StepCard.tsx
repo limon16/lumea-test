@@ -17,7 +17,7 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
   return (
     <article
       aria-current={isActive ? 'step' : undefined}
-      className={`relative mx-auto flex w-full flex-col gap-2.5 md:max-w-[500px]
+      className={`relative mx-auto flex w-full flex-col md:max-w-[500px]
                   rounded-[32px] p-6 ring-1 ring-[#63cc96]/40
                   md:p-10 ${step.background}
                   lg:h-[546px] lg:w-[500px] lg:shrink-0
@@ -56,8 +56,8 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
           </p>
         </div>
 
-        <p className="max-w-[360px] text-[16px]/[1.3] font-bold text-[#565b5a]
-                      md:text-[18px]/[1.3]">
+        <p className="max-w-[320px] text-[18px]/[1.3] font-bold tracking-normal
+                      text-[#858585]">
           {step.description}
         </p>
       </div>
@@ -65,13 +65,13 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
       <button
         type="button"
         onClick={onShop}
-        className="flex w-fit items-center gap-2 border-b
-                   border-(--color-ink) pb-1 text-[20px]/[1.2] font-bold
-                   text-(--color-ink) transition-transform duration-200
-                   hover:translate-x-1 focus-visible:outline-2
+        className="mt-8 flex w-fit items-center gap-2 border-b
+                   border-(--color-ink) text-[20px]/[1.2] font-bold
+                   text-(--color-ink) bg-transparent transition-colors duration-400 ease-out
+                   hover:border-(--color-accent) focus-visible:border-(--color-accent) focus-visible:outline-2
                    focus-visible:outline-offset-4
                    focus-visible:outline-(--color-accent)
-                   motion-reduce:transform-none md:text-[24px]/[1.2]"
+                   motion-reduce:transition-none md:h-7 md:pb-[8px] md:text-[24px]/[1]"
       >
         {step.cta}
         <ArrowUpRight className="size-[22px] shrink-0" />

@@ -28,7 +28,7 @@ export function AnnouncementBar({ messages }: Props) {
                  place-items-center overflow-hidden bg-(--color-ink) px-5
                  py-[10px] text-center text-[16px]/[1.1] font-bold tracking-normal
                  text-(--color-paper)
-                 md:w-fit md:max-w-[min(458px,100%)]"
+                 md:w-[458px] md:max-w-full"
       aria-live="polite"
       aria-atomic="true"
     >

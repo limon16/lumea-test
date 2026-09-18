@@ -17,10 +17,10 @@ export function ProductsPanel({ products, categories, activeId, onSelect, produc
   const category = categories.find((item) => item.id === activeId);
   return (
     <div id="shop-products" className="flex w-full min-w-0 max-w-full flex-col gap-3">
-      <h3 className="text-[16px]/[1.1] font-bold text-(--color-ink)">
+      <h3 className="pl-2.5 text-[16px]/[1.1] font-bold text-(--color-ink)">
         {category ? `Shop ${category.name}` : 'Shop products'}
       </h3>
-      <CatalogContent products={products} categories={categories} activeId={activeId}
+      <CatalogContent detachedShadows products={products} categories={categories} activeId={activeId}
         onSelect={onSelect} productPagination={productPagination} categoryPagination={categoryPagination} />
     </div>
   );

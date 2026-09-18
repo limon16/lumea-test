@@ -7,7 +7,7 @@ export interface Badge {
 
 export type PriceMode = 'single' | 'byVariation';
 
-export type VolumeMode = 'single' | 'byVariation';
+export type SubtitleMode = 'single' | 'byVariation';
 
 export interface Priced {
   priceOverride: number | null;
@@ -22,6 +22,7 @@ export interface SubValue extends Priced {
 
 export interface VariationValue extends Priced {
   label: string;
+  imageUrl: string | null;
   subLabel: string | null;
   subValues: SubValue[];
 }
@@ -36,8 +37,8 @@ export interface Product {
   name: string;
   imageUrl: string | null;
   imageAlt: string | null;
-  volumeMode: VolumeMode;
-  volume: string | null;
+  subtitleMode: SubtitleMode;
+  subtitle: string | null;
   priceMode: PriceMode;
   price: number | null;
   discountPercent: number | null;

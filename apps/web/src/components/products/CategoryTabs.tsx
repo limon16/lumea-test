@@ -13,7 +13,7 @@ interface Props extends LoadMoreProps {
 
 export function CategoryTabs({ categories, activeId, onSelect, compact = false, ...pagination }: Props) {
   return (
-    <div className={`relative z-10 w-full shrink-0 ${compact ? 'pb-1' : 'pb-3'}`}>
+    <div className={`relative z-10 w-full shrink-0 ${compact ? 'pb-1' : 'pl-2.5 pb-3 lg:pl-0'}`}>
       {/* Фон, обводка й тінь — на обгортці: скролер нижче має overflow-x,
           а він робить скрольною й вертикаль і зрізав би тінь. Градієнтна
           обводка через два фони, бо border-color градієнта не вміє. */}

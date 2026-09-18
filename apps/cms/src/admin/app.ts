@@ -3,8 +3,8 @@
 const FIELD_LABELS: Record<string, string> = {
   // Товар
   name: 'Назва',
-  volumeMode: 'Тип ємності',
-  volume: 'Ємність',
+  subtitleMode: 'Тип підзаголовка',
+  subtitle: 'Підзаголовок',
   image: 'Фото',
   priceMode: 'Тип ціни',
   price: 'Ціна',

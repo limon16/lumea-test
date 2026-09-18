@@ -12,6 +12,14 @@
       "required": true,
       "description": "Показується на картці товару, напр. «50 ml», «Dry», «Hyaluronic Acid 2%»."
     },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "description": "Необовʼязкове фото цього варіанта, напр. для «Invisible Finish» / «Tinted Finish» чи складу набору. Якщо не заповнене — варіант показується звичайною текстовою кнопкою."
+    },
     "priceOverride": {
       "type": "decimal",
       "description": "Ціна цього варіанта. Не заповнюйте, якщо ціну задають вкладені варіанти нижче.",

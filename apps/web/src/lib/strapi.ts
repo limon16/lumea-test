@@ -22,6 +22,7 @@ export async function getProductPage(page = 1, categoryId?: number, search = '')
     'sort[0]': 'id:asc', 'populate[image]': 'true',
     'populate[badges]': 'true', 'populate[categories]': 'true',
     'populate[variations][populate][values][populate][subValues]': 'true',
+    'populate[variations][populate][values][populate][image]': 'true',
   });
   if (categoryId !== undefined) params.set('filters[categories][id][$eq]', String(categoryId));
   if (search.trim()) params.set('filters[name][$containsi]', search.trim());

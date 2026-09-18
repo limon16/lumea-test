@@ -33,8 +33,8 @@ interface Value {
 
 interface SeedProduct {
   name: string;
-  volumeMode: 'single' | 'byVariation';
-  volume?: string;
+  subtitleMode: 'single' | 'byVariation';
+  subtitle?: string;
   priceMode: 'single' | 'byVariation';
   price?: number;
   discountPercent?: number;
@@ -48,7 +48,7 @@ interface SeedProduct {
 const PRODUCTS: SeedProduct[] = [
   {
     name: 'Hyaluronic Acid Serum',
-    volumeMode: 'single', volume: '30 ml',
+    subtitleMode: 'single', subtitle: '30 ml',
     priceMode: 'single', price: 28, discountPercent: 15, stock: 24,
     badges: ['Sale'],
     variations: [{
@@ -62,78 +62,81 @@ const PRODUCTS: SeedProduct[] = [
   },
   {
     name: 'Daily Moisturiser',
-    volumeMode: 'byVariation',
-    priceMode: 'byVariation',
+    subtitleMode: 'byVariation',
+    priceMode: 'single', price: 32, stock: 18,
     badges: ['New', 'Bestseller'],
-    variations: [{
-      label: 'Skin type',
-      values: [
-        {
-          label: 'Dry', subLabel: 'Size',
-          subValues: [{ label: '40 ml', priceOverride: 24, stock: 0 }],
-        },
-        {
-          label: 'Normal', subLabel: 'Size',
-          subValues: [
-            { label: '50 ml', priceOverride: 32, discountPercent: 10, stock: 3 },
-            { label: '100 ml', priceOverride: 52, stock: 18 },
-          ],
-        },
-        {
-          label: 'Sensitive', subLabel: 'Size',
-          subValues: [{ label: '50 ml', priceOverride: 34, stock: 11 }],
-        },
-      ],
-    }],
+    variations: [
+      {
+        label: 'Skin type',
+        values: [
+          { label: 'Dry' },
+          { label: 'Normal' },
+          { label: 'Sensitive' },
+        ],
+      },
+      {
+        label: 'Size',
+        values: [
+          { label: '30 ml' },
+          { label: '50 ml', discountPercent: 10 },
+          { label: '100 ml', discountPercent: 20 },
+        ],
+      },
+    ],
     categories: ['cleansers', 'face-wash'],
   },
   {
     name: 'Daily Face Cleanser',
-    volumeMode: 'single', volume: '150 ml',
-    priceMode: 'single', price: 20, discountedPrice: 17, stock: 2,
+    subtitleMode: 'single', subtitle: '150 ml',
+    priceMode: 'single', price: 20, discountPercent: 15, stock: 2,
     badges: ['Bestseller'],
-    variations: [],
-    categories: ['face-wash'],
-  },
-  {
-    name: 'Gentle Micellar Water',
-    volumeMode: 'single', volume: '200 ml',
-    priceMode: 'single', price: 15, stock: 40,
-    badges: [],
-    variations: [],
-    categories: ['makeup-removers'],
-  },
-  {
-    name: 'Vitamin C Brightening Serum',
-    volumeMode: 'single', volume: '30 ml',
-    priceMode: 'byVariation',
-    badges: ['Sale', 'New'],
     variations: [{
-      label: 'Strength',
+      label: 'Choose formula',
       values: [
-        { label: '10%', priceOverride: 45, discountPercent: 20, stock: 9 },
-        { label: '15%', priceOverride: 52, stock: 0 },
+        { label: 'Gentle Hydrating' },
+        { label: 'Deep Cleansing' },
       ],
     }],
-    categories: ['cleansers', 'makeup-removers'],
+    categories: ['face-wash'],
   },
   {
-    name: 'Overnight Repair Mask',
-    volumeMode: 'single', volume: '75 ml',
-    priceMode: 'single', price: 38, stock: 6,
-    badges: [],
+    name: 'Cleanse + Treat + Hydrate',
+    subtitleMode: 'single', subtitle: '3 products',
+    priceMode: 'single', price: 65, discountPercent: 15, stock: 12,
+    badges: ['Bestseller'],
     variations: [{
-      label: 'Skin type',
-      values: [{ label: 'Normal' }, { label: 'Sensitive' }],
+      label: 'Set includes',
+      values: [
+        { label: 'Cleanser + Serum + Cream' },
+        { label: 'Cleanser + Serum + SPF' },
+      ],
     }],
-    categories: ['face-wash'],
+    categories: ['cleansers', 'face-wash'],
+    // Картинки варіантів («Set includes») додайте вручну в адмінці Strapi —
+    // seed медіафайли не завантажує.
+  },
+  {
+    name: 'Daily Sun Protection',
+    subtitleMode: 'single', subtitle: '50 ml',
+    priceMode: 'single', price: 26, discountPercent: 15, stock: 20,
+    badges: ['Sale'],
+    variations: [{
+      label: 'Finish',
+      values: [
+        { label: 'Invisible Finish' },
+        { label: 'Tinted Finish' },
+      ],
+    }],
+    categories: ['face-wash', 'makeup-removers'],
+    // Картинки варіантів («Finish») додайте вручну в адмінці Strapi —
+    // seed медіафайли не завантажує.
   },
 ];
 
 const MESSAGES = [
   { text: 'Get 15% off with code LUMEAFIRST15', order: 1 },
   { text: 'Free delivery on orders over £40', order: 2 },
-  { text: 'New: Vitamin C Brightening Serum', order: 3 },
+  { text: 'New: Daily Sun Protection', order: 3 },
 ];
 
 let app: Awaited<ReturnType<typeof createStrapi>> | undefined;

@@ -40,8 +40,8 @@ const CATEGORIES: Category[] = [
 const product = (id: number, name: string, categoryIds: number[]): Product => ({
   id,
   name,
-  volumeMode: 'single',
-  volume: '30 ml',
+  subtitleMode: 'single',
+  subtitle: '30 ml',
   priceMode: 'single',
   stock: null,
   imageUrl: null,
