@@ -16,7 +16,7 @@ export const STEPS: readonly Step[] = [
     description:
       'Gently remove makeup, SPF and daily impurities without stripping your skin.',
     cta: 'Shop cleansers',
-    image: '/images/step-01.svg',
+    image: '/images/01.webp',
     background: 'bg-(--color-surface)',
   },
   {
@@ -26,7 +26,7 @@ export const STEPS: readonly Step[] = [
     description:
       'Serums and treatments deliver targeted ingredients to help with dryness, dullness, texture and blemishes.',
     cta: 'Shop treatments',
-    image: '/images/step-02.svg',
+    image: '/images/02.webp',
     background: 'bg-[linear-gradient(135deg,#e5f7ed,#92dbb6)]',
   },
   {
@@ -36,7 +36,7 @@ export const STEPS: readonly Step[] = [
     description:
       'Moisturisers help strengthen the skin barrier, lock in hydration and leave skin soft and balanced.',
     cta: 'Shop moisturisers',
-    image: '/images/step-03.svg',
+    image: '/images/03.webp',
     background: 'bg-(--color-surface)',
   },
   {
@@ -46,7 +46,7 @@ export const STEPS: readonly Step[] = [
     description:
       'Daily SPF helps protect your skin from UV damage and keeps it looking healthy every day.',
     cta: 'Shop SPF',
-    image: '/images/step-04.svg',
+    image: '/images/04.webp',
     background: 'bg-[radial-gradient(circle_at_50%_50%,#fecbe4,#f5dfe3)]',
   },
 ];
