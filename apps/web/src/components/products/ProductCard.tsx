@@ -29,14 +29,22 @@ interface Props {
   headingLevel?: ProductHeadingLevel;
 }
 
-const HEART_SHADOW = [
-  '1px 2px 4px 0px #9CB6BA14',
-  '-8px 12px 12px 0px #9CB6BA17',
-  '12px 20px 16px 0px #9CB6BA17',
-  '8px 26px 14px 0px #9CB6BA17',
-  '-20px 40px 30px 0px #9CB6BA0F',
-  '-12px -40px 30px 0px #9CB6BA1A',
-].join(', ');
+const HEART_SHADOW_LAYERS: readonly [number, number, number, string][] = [
+  [1, 2, 4, '#9CB6BA14'],
+  [-8, 12, 12, '#9CB6BA17'],
+  [12, 20, 16, '#9CB6BA17'],
+  [8, 26, 14, '#9CB6BA17'],
+  [-20, 40, 30, '#9CB6BA0F'],
+  [-12, -40, 30, '#9CB6BA1A'],
+];
+
+/** У макеті тінь серця масштабується разом із кнопкою: 32px проти 44px. */
+function heartShadow(scale: number) {
+  return HEART_SHADOW_LAYERS
+    .map(([x, y, blur, color]) =>
+      `${x * scale}px ${y * scale}px ${blur * scale}px 0px ${color}`)
+    .join(', ');
+}
 
 export function ProductCard({
   product, initialSelected, details = false, compact = false, preview = false, headingLevel: Heading = 'h4',
@@ -86,7 +94,7 @@ export function ProductCard({
     <article
       className={`flex shrink-0 flex-col break-words bg-(--color-paper) shadow-soft
                  ${compact
-                   ? 'h-[355px] w-[160px] gap-3 rounded-[12px] border border-transparent px-1 pt-1 pb-3 [background:linear-gradient(var(--color-paper),var(--color-paper))_padding-box,linear-gradient(to_bottom,#f3f5f5,#f5fcfd)_border-box]'
+                   ? 'h-[355px] w-[160px] gap-3 rounded-[12px] border border-transparent px-1 pt-1 pb-3 [background:linear-gradient(to_top,#5e7b7133,#5e7b7100_32px)_padding-box,linear-gradient(var(--color-paper),var(--color-paper))_padding-box,linear-gradient(to_bottom,#f3f5f5,#f5fcfd)_border-box]'
                    : 'h-full min-h-[632px] w-[264px] gap-4 rounded-(--radius-md) p-2'}`}
     >
       <div className={`relative w-full shrink-0 overflow-hidden bg-(--color-surface)
@@ -133,12 +141,12 @@ export function ProductCard({
           aria-label={saved ? 'Remove from wishlist' : 'Add to wishlist'}
           aria-pressed={saved}
           onClick={() => shop.toggleWishlist(product)}
-          style={{ boxShadow: HEART_SHADOW }}
+          style={{ boxShadow: heartShadow(compact ? 0.6875 : 1) }}
           className={`absolute flex items-center justify-center
                      rounded-(--radius-pill-lg) bg-(--color-surface) transition-colors
                      hover:bg-(--color-border) focus-visible:outline-2
                      focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)
-                     ${compact ? 'bottom-1.5 right-1.5 size-8' : 'bottom-2 right-2 size-11'}`}
+                     ${compact ? 'bottom-[5px] right-[2px] size-8' : 'bottom-2 right-2 size-11'}`}
         >
           <HeartIcon className={`${compact ? 'size-5' : 'h-8 w-8'} ${saved ? 'fill-(--color-accent) text-(--color-accent)' : 'text-(--color-ink)'}`} />
         </button>
@@ -197,7 +205,7 @@ export function ProductCard({
                            disabled:bg-(--color-border)
                            disabled:text-(--color-muted)
                            ${compact
-                             ? 'justify-center gap-1 whitespace-nowrap px-3'
+                             ? 'justify-center gap-1 whitespace-nowrap px-3 shadow-soft'
                              : 'justify-start'}`}
               >
                 {available ? 'Add to bag' : 'Out of stock'}

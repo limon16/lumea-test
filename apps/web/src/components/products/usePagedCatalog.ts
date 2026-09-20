@@ -48,6 +48,7 @@ export function usePagedCatalog<T extends { id: number }>(url: string, initial?:
       }
       if (controller.signal.aborted) return;
       publish({ ...next, items: [...merged.values()], loading: false });
+      if (retry && previous.error) window.dispatchEvent(new Event('lumea:catalog-recovered'));
     } catch (error) {
       if (!controller.signal.aborted) publish({ ...previous, loading: false, error: error instanceof Error ? error.message : 'Unable to load products.' });
     } finally {

@@ -40,8 +40,9 @@ function paged<T>(json: unknown, normalize: (value: unknown) => T[], page: numbe
   return { items, page, pageCount: pagination?.pageCount ?? page, total: pagination?.total ?? items.length };
 }
 
-export async function getAnnouncements(): Promise<string[]> {
+export async function getAnnouncements(): Promise<string[] | null> {
   const json = await fetchJson('/announcement-bar?populate=messages');
+  if (json === null) return null;
   const data = (json as { data?: { messages?: unknown } } | null)?.data;
   const list = Array.isArray(data?.messages) ? data.messages : [];
   return list
