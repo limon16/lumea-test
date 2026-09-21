@@ -245,7 +245,7 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
                         lg:items-start lg:gap-10">
           <ol className="steps-list relative flex w-full list-none flex-col
                          lg:h-(--panel-height) lg:w-[500px] lg:shrink-0
-                         lg:overflow-clip lg:[overflow-clip-margin:96px]">
+                         lg:overflow-visible">
             {STEPS.map((step, index) => (
               <Fragment key={step.number}>
                 <li aria-hidden="true" ref={(node) => { anchorRefs.current[index] = node; }} className="step-anchor h-0 lg:hidden" />

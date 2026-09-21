@@ -63,6 +63,7 @@ export function ProductCard({
   const stock = resolveStock(product, selected);
   const available = isInStock(product, selected);
   const image = strapiMedia(product.imageUrl);
+  const [imageFailed, setImageFailed] = useState(false);
   const inBag = shop.cart.find(
     (item) => item.key === cartKey(product.id, activeSelection(product, selected)),
   );
@@ -70,8 +71,8 @@ export function ProductCard({
   if (preview) return (
     <article className="flex w-[264px] flex-col gap-3 rounded-2xl bg-white p-3 shadow-soft">
       <div className="relative h-[var(--preview-image-height,clamp(0px,calc(100dvh-420px),160px))] shrink-0 overflow-hidden rounded-xl bg-(--color-surface)">
-        {image ? (
-          <Image src={image} alt={product.imageAlt ?? product.name} fill sizes="240px" className="object-contain" />
+        {image && !imageFailed ? (
+          <Image src={image} alt={product.imageAlt ?? product.name} fill sizes="240px" className="object-contain" onError={() => setImageFailed(true)} />
         ) : (
           <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-[14px]/[1] font-bold text-(--color-muted)">
             No image
@@ -94,20 +95,21 @@ export function ProductCard({
     <article
       className={`flex shrink-0 flex-col break-words bg-(--color-paper) shadow-soft
                  ${compact
-                   ? 'h-[355px] w-[160px] gap-3 rounded-[12px] border border-transparent px-1 pt-1 pb-3 [background:linear-gradient(to_top,#5e7b7133,#5e7b7100_32px)_padding-box,linear-gradient(var(--color-paper),var(--color-paper))_padding-box,linear-gradient(to_bottom,#f3f5f5,#f5fcfd)_border-box]'
+                   ? 'h-[355px] w-[160px] gap-3 rounded-[12px] border border-transparent px-1 pt-1 pb-[11px] [background:linear-gradient(to_top,#5e7b7133,#5e7b7100_32px)_padding-box,linear-gradient(var(--color-paper),var(--color-paper))_padding-box,linear-gradient(to_bottom,#f3f5f5,#f5fcfd)_border-box]'
                    : 'h-full min-h-[632px] w-[264px] gap-4 rounded-(--radius-md) p-2'}`}
     >
       <div className={`relative w-full shrink-0 overflow-hidden bg-(--color-surface)
                       ${compact
                         ? 'aspect-square rounded-[12px]'
                         : 'h-[248px] rounded-(--radius-md)'}`}>
-        {image !== null ? (
+        {image !== null && !imageFailed ? (
           <Image
             src={image}
             alt={product.imageAlt ?? product.name}
             fill
             sizes="(min-width: 768px) 264px, 50vw"
             className="object-cover"
+            onError={() => setImageFailed(true)}
           />
         ) : (
           <div
@@ -152,7 +154,7 @@ export function ProductCard({
         </button>
       </div>
 
-      <div className={`flex flex-1 flex-col justify-between pb-1 ${compact ? 'gap-1.5' : 'gap-2'}`}>
+      <div className={`flex flex-1 flex-col justify-between ${compact ? '-mx-px gap-1.5' : 'gap-2 pb-1'}`}>
         <div className="flex flex-col gap-3">
           <Heading className={`flex flex-col text-(--color-ink)
                          ${compact
@@ -205,7 +207,7 @@ export function ProductCard({
                            disabled:bg-(--color-border)
                            disabled:text-(--color-muted)
                            ${compact
-                             ? 'justify-center gap-1 whitespace-nowrap px-3 shadow-soft'
+                             ? 'justify-center gap-1 whitespace-nowrap px-3 shadow-soft !h-[46px] !font-medium !leading-[1.2]'
                              : 'justify-start'}`}
               >
                 {available ? 'Add to bag' : 'Out of stock'}
@@ -216,8 +218,8 @@ export function ProductCard({
               <button
                 type="button"
                 onClick={() => details ? shop.show('cart') : shop.show({ product, selected })}
-                className="self-start text-[14px]/[1.3] text-(--color-ink)
-                           underline underline-offset-4 focus-visible:outline-2
+                className="flex h-[15px] shrink-0 items-end self-start pb-px text-[14px]/[1.2] font-normal text-(--color-ink)
+                           border-b border-(--color-ink) focus-visible:outline-2
                            focus-visible:outline-offset-2
                            focus-visible:outline-(--color-accent)"
               >

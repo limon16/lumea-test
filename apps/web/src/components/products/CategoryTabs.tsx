@@ -29,7 +29,7 @@ export function CategoryTabs({ categories, activeId, onSelect, compact = false, 
             role="group"
             aria-label="Product categories"
             className={`flex w-fit items-center rounded-(--radius-pill-lg)
-                       ${compact ? 'gap-3 p-1' : 'gap-6 p-1 lg:p-[3px]'}`}
+                       ${compact ? 'gap-3 p-[3px]' : 'gap-6 p-1 lg:p-[3px]'}`}
           >
             {categories.map((category) => {
               const isActive = category.id === activeId;
@@ -42,12 +42,12 @@ export function CategoryTabs({ categories, activeId, onSelect, compact = false, 
                   onClick={() => onSelect(category.id)}
                   className={`flex shrink-0 items-center whitespace-nowrap
                               rounded-(--radius-pill-lg) text-[18px]/[1.3]
-                              ${compact ? 'p-3' : 'h-[68px] px-8'}
-                              font-bold transition-colors focus-visible:outline-2
+                              ${compact ? `h-[47px] px-3 ${isActive ? 'font-medium' : 'font-normal'}` : 'h-[68px] px-8 font-bold'}
+                              transition-colors focus-visible:outline-2
                               focus-visible:-outline-offset-2
                               focus-visible:outline-(--color-accent)
                               ${isActive
-                                ? 'bg-(--color-ink) text-[#fcfcfc] tracking-[-0.02em]'
+                                ? `bg-(--color-ink) text-[#fcfcfc] ${compact ? 'tracking-normal' : 'tracking-[-0.02em]'}`
                                 : 'text-(--color-ink) hover:text-(--color-muted)'}`}
                 >
                   {category.name}

@@ -74,28 +74,27 @@ export function MobileSheet({
       aria-label={title}
       className="sheet bg-(--color-paper) backdrop:bg-black/40"
     >
-      {/* Бічних падінгів немає навмисно: скрол-смуги всередині самі тримають
-          відступи, інакше overflow обрізав би тіні карток і вкладок. */}
-      <div className="relative flex h-full flex-col overflow-y-auto pt-[60px] pb-8">
-        <h3 className="mb-4 text-center text-[24px]/[1.2] font-bold text-(--color-ink)">
+      <div className="relative flex h-full flex-col overflow-x-hidden overflow-y-auto pl-3 pt-[60px] pb-8">
+        <h3 className="mb-10 text-center text-[24px]/[29px] font-bold text-(--color-ink)">
           {title}
         </h3>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close products"
-          className="absolute right-5 top-5 flex size-8 items-center justify-center
-                     rounded-full bg-(--color-surface) text-(--color-ink)
-                     transition-colors hover:bg-(--color-border)
+          className="absolute right-3 top-5 flex size-8 items-center justify-center
+                     rounded-full bg-[#858585] text-white
+                     transition-colors hover:bg-[#505050]
                      focus-visible:outline-2 focus-visible:outline-offset-2
                      focus-visible:outline-(--color-accent)"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4">
+          <svg viewBox="0 0 32 32" aria-hidden="true" className="size-8" fill="none">
             <path
-              d="M5 5l14 14M19 5L5 19"
+              d="M9.39966 22.5996L22.599 9.40028M9.39966 9.40186L22.599 22.6012"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="1.83333"
               strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </button>
@@ -103,7 +102,7 @@ export function MobileSheet({
         <CatalogContent products={products} categories={categories} activeId={activeCategoryId} compact
           onSelect={onCategoryChange} productPagination={productPagination} categoryPagination={categoryPagination} />
 
-        <div className="mt-auto flex shrink-0 flex-col gap-4 px-3">
+        <div className="mt-auto flex shrink-0 flex-col gap-4">
           <p className="text-center text-[18px]/[1.3] font-medium text-[#858585]">
             Shop products for:
           </p>

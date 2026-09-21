@@ -200,6 +200,15 @@ html {
 
 /* The phone design exposes all four steps in a page-scrolling stack. */
 @media (width < 768px) {
+  .steps-track {
+    --mobile-step-shadow:
+      1px 2px 4px #9cb6ba14,
+      -8px 12px 12px #9cb6ba17,
+      12px 20px 16px #9cb6ba17,
+      8px 26px 14px #9cb6ba17,
+      -20px 40px 30px #9cb6ba0f,
+      0 -12px 12px #9aada733;
+  }
   .steps-list {
     height: auto;
     max-width: 500px;
@@ -211,7 +220,27 @@ html {
   .step-card-row { top: var(--stack-top); }
   .step-card-row:not(:last-child) { margin-bottom: -290px; }
   .step-card-row > div { padding-bottom: 0; }
-  .step-card-row .step-card { padding: 20px 14px 18px; border-radius: 24px; }
+  .step-card-row .step-card {
+    padding: 20px 14px 18px;
+    border-radius: 24px;
+    box-shadow: var(--mobile-step-shadow);
+  }
+  .step-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(to bottom, #f3f5f5 -11.49%, #f5fcfd 104.6%);
+    mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+    mask-clip: content-box, border-box;
+    mask-composite: exclude;
+  }
+  .step-card-row:nth-child(6) .step-card::after {
+    background: linear-gradient(137.05deg, #e5f7ed, #92dbb6);
+  }
   .step-card > div:first-of-type { gap: 24px; }
   .step-card > div:first-of-type > div { gap: 16px; }
   .step-card > div:first-of-type > div > div { min-height: 48px; }
@@ -250,6 +279,7 @@ html {
     overflow-x: hidden;
     overflow-y: auto;
     border-radius: 24px;
+    box-shadow: var(--mobile-step-shadow);
   }
   .steps-list > .step-anchor { display: none; }
   .step-card-row { position: sticky; top: 0; transform: none; }

@@ -105,7 +105,7 @@ export function Button({
             />
           ))}
         </span>
-      <span className="relative inline-flex items-center gap-2">
+      <span className="relative inline-flex items-center gap-(--button-gap,8px)">
         {children}
       </span>
     </button>

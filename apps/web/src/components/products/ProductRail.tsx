@@ -133,7 +133,7 @@ export function ProductRail({ products, label, compact = false, preview = false,
   };
   return (
     <div className={`relative isolate min-w-0 shrink-0 w-full
-      ${compact ? '' : '-mt-7'}`}>
+      ${compact ? '-mt-[27px]' : '-mt-7'}`}>
       {separateShadows && (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 hidden lg:block [clip-path:inset(-48px_0_-48px_-40px)]">
           {products.map((product, index) => (
@@ -145,12 +145,12 @@ export function ProductRail({ products, label, compact = false, preview = false,
       <div ref={viewportRef} data-scroll-root role="region" aria-label={label} tabIndex={0}
         onScroll={(event) => sync(event.currentTarget, scrollbarRef.current)}
         className={`min-w-0 overflow-x-auto overscroll-x-contain snap-x snap-proximity
-          ${compact ? 'scroll-pl-2.5' : 'overflow-y-hidden scroll-px-10'}
+          ${compact ? '-ml-3 scroll-pl-[22px]' : 'overflow-y-hidden scroll-px-10'}
           ${separateShadows ? 'lg:scroll-pl-0 lg:snap-none lg:cursor-grab lg:select-none' : ''}
           [scrollbar-width:none] [&::-webkit-scrollbar]:hidden outline-none
           focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-(--color-muted)`}>
         <ul ref={contentRef} className={`flex w-max min-w-full list-none items-stretch
-          ${compact ? 'gap-2 pl-2.5 pr-[22px] pt-[5px] pb-12' : 'gap-3 px-2.5 pt-8 pb-12'}
+          ${compact ? 'gap-2 pl-[22px] pt-8 pb-12' : 'gap-3 px-2.5 pt-8 pb-12'}
           ${separateShadows ? 'lg:pl-0 lg:[&>li>article]:shadow-none' : ''}`}>
           {products.map((product) => (
             <li key={product.id} className={`flex shrink-0 snap-start ${compact ? 'w-[160px]' : 'w-[264px]'}`}>

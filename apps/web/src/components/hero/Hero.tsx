@@ -19,7 +19,7 @@ export function Hero({ header }: Props) {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative isolate overflow-hidden bg-[#fdfdfd]
+      className="relative isolate overflow-hidden bg-[#fdfdfd] shadow-soft md:shadow-none
                  min-h-[807px] rounded-b-[30px] pt-6.5 pb-12 md:min-h-0 md:rounded-none md:pt-11 md:pb-7.5"
     >
       <div aria-hidden="true"
@@ -69,8 +69,8 @@ export function Hero({ header }: Props) {
             </p>
             <Button
               onClick={browse}
-              className="h-[54px] w-full whitespace-nowrap !px-8 font-normal md:h-auto md:font-bold
-                         md:!px-[clamp(24px,4vw,74px)] md:!py-[30px] md:!text-[24px]/[1.2]"
+              className="h-[54px] w-full whitespace-nowrap !px-8 font-normal md:h-auto md:font-bold md:[--button-gap:6px]
+                         md:!px-[clamp(24px,4vw,74px)] md:!py-[30px] md:!text-[24px]/[1] md:tracking-[-0.02em]"
             >
               Find your routine
               <ArrowUpRight className="size-[22px]" />
@@ -127,8 +127,8 @@ export function Hero({ header }: Props) {
               <Button
                 onClick={browse}
                 variant="secondary"
-                className="h-[54px] w-full whitespace-nowrap px-8 py-0
-                           text-[18px]/[1] md:px-8 md:py-0 md:text-[18px]/[1]"
+                className="h-[54px] w-full whitespace-nowrap !px-8 !py-4
+                           !text-[18px]/[1.2] [--button-gap:6px]"
               >
                 Shop now
                 <ArrowUpRight className="size-[22px]" />

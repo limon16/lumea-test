@@ -22,12 +22,12 @@ export function PriceBlock({ price, compact = false }: Props) {
       )}
 
       <div className={`flex items-center ${compact ? 'gap-0.5' : 'gap-1.5'}`}>
-        <span className={`font-bold text-(--color-ink)
-                          ${compact ? 'text-[16px]/[1.2]' : 'text-[16px]/[1.1]'}`}>
+        <span className={`text-(--color-ink)
+                          ${compact ? 'text-[16px]/[1.2] font-medium' : 'text-[16px]/[1.1] font-bold'}`}>
           Price
         </span>
-        <span className={`font-bold text-(--color-ink)
-                          ${compact ? 'text-[16px]/[1.2]' : 'text-[18px]/[1.2]'}`}>
+        <span className={`text-(--color-ink)
+                          ${compact ? 'text-[16px]/[1.2] font-medium' : 'text-[18px]/[1.2] font-bold'}`}>
           {formatPrice(price.final)}
         </span>
       </div>
@@ -35,11 +35,11 @@ export function PriceBlock({ price, compact = false }: Props) {
       {price.hasDiscount && price.discountPercent !== null && (
         <span
           className={`absolute top-1/2 flex items-center justify-center
-                     rounded-(--radius-pill-lg) bg-(--color-ink) font-bold
+                     rounded-(--radius-pill-lg) bg-(--color-ink)
                      text-(--color-paper)
                      ${compact
-                       ? 'right-0 px-2 py-1 text-[16px]/[1.2]'
-                       : 'right-6 h-[30px] w-[54px] text-[14px]/[1.3]'}`}
+                       ? 'right-0 px-2 py-1 text-[16px]/[1.2] font-medium'
+                       : 'right-6 h-[30px] w-[54px] text-[14px]/[1.3] font-bold'}`}
           style={{ transform: 'translateY(-50%) rotate(-3deg)' }}
         >
           -{price.discountPercent}%
