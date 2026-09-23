@@ -11,10 +11,10 @@ interface Props extends ComponentPropsWithoutRef<'button'> {
 const VARIANTS: Record<Variant, string> = {
   primary: 'bg-(--color-ink) text-(--color-paper)',
   secondary:
-    'bg-(--color-surface) text-(--color-ink) hover:text-[#1b3829] focus-visible:text-[#1b3829]',
+    'bg-(--color-surface) text-(--color-ink) enabled:hover:text-[#1b3829] focus-visible:text-[#1b3829]',
   card: 'bg-(--color-accent) text-(--color-paper)',
   cardGhost:
-    'bg-(--color-surface) text-(--color-ink) hover:text-[#1b3829] focus-visible:text-[#1b3829]',
+    'bg-(--color-surface) text-(--color-ink) enabled:hover:text-[#1b3829] focus-visible:text-[#1b3829]',
 };
 
 const SIZES: Record<Variant, string> = {
@@ -82,14 +82,14 @@ export function Button({
             <span
               key={color}
               className="absolute left-1/2 top-(--wave-start-top)
-                         size-(--start) -translate-x-1/2 -translate-y-1/2
+                         aspect-square w-(--start) -translate-x-1/2 -translate-y-1/2
                          rounded-full
                          transition-[top,width,height] duration-400
                          ease-[cubic-bezier(0.42,0,0.58,1)]
-                         group-hover/button:top-[calc(50%+var(--wave-end-y))]
-                         group-hover/button:size-(--end)
+                         group-enabled/button:group-hover/button:top-[calc(50%+var(--wave-end-y))]
+                         group-enabled/button:group-hover/button:w-(--end)
                          group-focus-visible/button:top-[calc(50%+var(--wave-end-y))]
-                         group-focus-visible/button:size-(--end)
+                         group-focus-visible/button:w-(--end)
                          motion-reduce:transition-none"
               style={{
                 background: color,
@@ -100,7 +100,9 @@ export function Button({
                   ? '0.44px'
                   : '3px',
                 '--start': `${start}px`,
-                '--end': `${end}px`,
+                '--end': variant === 'secondary' || variant === 'cardGhost'
+                  ? `max(${end}px, 120%)`
+                  : `${end}px`,
               } as CSSProperties}
             />
           ))}

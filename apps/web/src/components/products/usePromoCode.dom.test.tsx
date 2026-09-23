@@ -12,6 +12,19 @@ const response = (total = 85, code: string | null = 'SAVE15', unavailableItems: 
 function deferred() { let resolve!: (value: ReturnType<typeof response>) => void; const promise = new Promise<ReturnType<typeof response>>(r => { resolve = r; }); return { promise, resolve }; }
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
+it('blocks checkout for insufficient local stock even when the quote succeeds', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response(100, null)));
+  const { result, rerender } = renderHook(({ stock }) => usePromoCode([
+    { ...cart()[0], stock },
+  ]), { initialProps: { stock: 0 } });
+  await waitFor(() => expect(result.current.quote).toBeDefined());
+  expect(result.current.ready).toBe(false);
+  expect(result.current.unavailableIndexes.has(0)).toBe(true);
+  rerender({ stock: 1 });
+  expect(result.current.ready).toBe(true);
+  expect(result.current.unavailableIndexes.size).toBe(0);
+});
+
 it('checks availability immediately, then applies a code using server pricing', async () => {
   const fetchMock = vi.fn().mockResolvedValueOnce(response(100, null)).mockResolvedValueOnce(response()); vi.stubGlobal('fetch', fetchMock);
   const { result } = renderHook(() => usePromoCode(cart()));

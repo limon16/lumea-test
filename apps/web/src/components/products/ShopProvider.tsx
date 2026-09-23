@@ -87,8 +87,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
             <div className="flex min-h-0 flex-1 flex-col gap-5">
               {cart.length === 0 ? <ShopEmpty title="A little space for your essentials" description="Your bag is empty. Find your next skincare favourite." /> : <ul className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain pr-2 [scrollbar-gutter:stable]">
                 {cart.map((item, index) => {
-                  const unavailable = promo.unavailableIndexes.has(index)
-                    || (item.stock !== null && item.stock < item.quantity);
+                  const unavailable = promo.unavailableIndexes.has(index);
                   return <li key={item.key} className={`flex shrink-0 flex-wrap items-center justify-between gap-5 rounded-[24px] border bg-white p-5 shadow-[0_4px_20px_-12px_#9aada766] ${unavailable ? 'border-[#e4a69a]' : 'border-(--color-border)/70'}`}>
                   <div className="min-w-0 flex-1 basis-[200px]"><h3 className="break-words text-[17px]/[1.4] font-bold">{item.product.name}</h3><p className="mt-1 text-[13px]/[1.5] text-[#68746b]">{Object.values(item.selected).join(' · ')}</p>{unavailable ? <p className="mt-3 text-[14px] font-bold text-[#b4381f]">This product is unavailable. Remove it to continue.</p> : <p className="mt-3 text-[15px] font-bold">{formatPrice(item.unitPrice)} <span className="font-normal text-[#68746b]">each</span></p>}</div>
                   <div className="flex flex-wrap items-center gap-3">
@@ -103,7 +102,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
               <p className="flex shrink-0 items-center justify-between border-t border-(--color-border) pt-3 text-[20px] font-bold"><span>Total</span><span className="tabular-nums">{formatPrice(promo.displayQuote?.total ?? total)}</span></p>
               <div className="flex shrink-0 flex-wrap gap-3">
                 {cart.length > 0 && (
-                  <Button disabled={!promo.ready} onClick={() => show('checkout')} variant="primary" size="dialog" className="w-full sm:w-auto">Checkout</Button>
+                  <Button disabled={!promo.ready} onClick={() => show('checkout')} variant="primary" size="dialog" className="w-full sm:w-auto disabled:cursor-not-allowed disabled:opacity-40">Checkout</Button>
                 )}
                 <Button type="button" onClick={browse} variant="secondary" size="dialog" className="w-full sm:w-auto">Continue shopping</Button>
               </div>

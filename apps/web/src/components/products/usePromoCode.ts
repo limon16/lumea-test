@@ -52,6 +52,10 @@ export function usePromoCode(cart: CartItem[]) {
   const displayQuote = current?.quote ?? (previousQuote && !code
     ? { ...previousQuote, promoCode: null, discountAmount: 0, total: previousQuote.subtotal }
     : previousQuote);
+  const unavailableIndexes = new Set(displayQuote?.unavailableItems.map(item => item.index) ?? []);
+  cart.forEach((item, index) => {
+    if (item.stock !== null && item.stock < item.quantity) unavailableIndexes.add(index);
+  });
   return {
     code,
     apply: (value: string) => {
@@ -67,7 +71,7 @@ export function usePromoCode(cart: CartItem[]) {
     error: current?.error,
     quote: cart.length ? current?.quote : undefined,
     displayQuote: cart.length ? displayQuote : undefined,
-    unavailableIndexes: new Set(displayQuote?.unavailableItems.map(item => item.index) ?? []),
-    ready: Boolean(cart.length && current?.quote && current.quote.unavailableItems.length === 0),
+    unavailableIndexes,
+    ready: Boolean(cart.length && current?.quote && unavailableIndexes.size === 0),
   };
 }
