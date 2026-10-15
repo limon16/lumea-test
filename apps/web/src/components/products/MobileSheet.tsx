@@ -102,7 +102,7 @@ export function MobileSheet({
         <CatalogContent products={products} categories={categories} activeId={activeCategoryId} compact
           onSelect={onCategoryChange} productPagination={productPagination} categoryPagination={categoryPagination} />
 
-        <div className="mt-auto flex shrink-0 flex-col gap-4">
+        <div className="mt-auto flex shrink-0 flex-col gap-4 pl-0.5 pr-3.5">
           <p className="text-center text-[18px]/[1.3] font-medium text-[#858585]">
             Shop products for:
           </p>
