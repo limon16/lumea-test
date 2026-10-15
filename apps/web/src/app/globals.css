@@ -135,6 +135,9 @@ html {
 @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   .step-card-row {
     transform: translateY(var(--card-y, var(--initial-y, 0px)));
+    /* У зібраній стопці картка не виходить за низ панелі товарів,
+       тому остання нижча за решту. */
+    height: min(var(--card-height), var(--panel-height) - var(--stack-offset));
   }
 }
 
@@ -156,33 +159,32 @@ html {
   }
 }
 
-/* Мобільні кроки скролять у власному вʼюпорті заввишки з картку
-   (--mobile-card-height задає HowItWorks), без скрол-треку сторінки. */
+/* До 1024px кроки — sticky-стопка на скролі сторінки: кожна картка
+   зупиняється на --stack-top і лишає видимим верх попередніх. */
 @media (width < 1024px) and (prefers-reduced-motion: no-preference) {
   .steps-track { height: auto; }
   .steps-stage { position: static; }
-  .steps-list {
-    display: flex;
-    height: var(--mobile-card-height);
-    max-width: 500px;
-    margin-inline: auto;
-    overflow-x: hidden;
-    overflow-y: auto;
-    scrollbar-width: none;
-    border-radius: 32px;
-  }
-  .steps-list::-webkit-scrollbar { display: none; }
-  .steps-list > .step-anchor { display: none; }
+  .steps-list { max-width: 500px; margin-inline: auto; }
+  /* Картка липне всередині свого рядка. Рядок тягнеться вниз до місця, де
+     остання картка стає в стопку, а відʼємний відступ лишає між картками
+     24px. Тому всі картки відпускає разом, і стопка їде вгору цілою. */
   .step-card-row {
-    position: sticky;
-    top: 0;
-    flex: 0 0 auto;
-    min-width: 0;
-    transform: none;
+    --step-height: var(--card-height);
+    --step-rest: calc(var(--stack-rest) * (var(--step-height) + 24px - var(--stack-peek)));
+    position: static;
+    flex: none;
+    height: calc(var(--step-height) + var(--step-rest));
+    margin-bottom: calc(24px - var(--step-rest));
+    pointer-events: none;
   }
-  .step-card-row > div { padding-bottom: 24px; }
-  .step-card-row:last-child > div { padding-bottom: 0; }
-  .step-card-row article { height: var(--mobile-card-height); min-height: 0; }
+  .step-card-row:last-child { margin-bottom: 0; }
+  .step-card-row > div {
+    position: sticky;
+    top: var(--stack-top);
+    padding-bottom: 0;
+    pointer-events: auto;
+  }
+  .step-card-row article { height: var(--step-height); min-height: 0; }
   .step-card-row article > :last-child {
     flex: 1 1 0;
     min-height: 0;
@@ -217,8 +219,6 @@ html {
     gap: 0;
   }
   .steps-list > .step-anchor { display: block; }
-  .step-card-row { top: var(--stack-top); }
-  .step-card-row:not(:last-child) { margin-bottom: -290px; }
   .step-card-row > div { padding-bottom: 0; }
   .step-card-row .step-card {
     padding: 20px 14px 18px;
@@ -270,20 +270,6 @@ html {
   .step-card-row:not(:last-child) { margin-bottom: 24px; }
 }
 
-/* Keep the phone stack one card tall; incoming cards cover the sticky card. */
 @media (width < 768px) and (prefers-reduced-motion: no-preference) {
-  .steps-track { height: var(--mobile-card-height); }
-  .steps-stage { position: static; min-height: 0; height: var(--mobile-card-height); }
-  .steps-list {
-    height: var(--mobile-card-height);
-    overflow-x: hidden;
-    overflow-y: auto;
-    border-radius: 24px;
-    box-shadow: var(--mobile-step-shadow);
-  }
-  .steps-list > .step-anchor { display: none; }
-  .step-card-row { position: sticky; top: 0; transform: none; }
-  .step-card-row:not(:last-child) { margin-bottom: 0; }
-  .step-card-row > div { padding-bottom: 24px; }
-  .step-card-row:last-child > div { padding-bottom: 0; }
+  .step-card-row { --step-height: var(--mobile-card-height); }
 }

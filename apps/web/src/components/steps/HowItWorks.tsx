@@ -30,8 +30,9 @@ interface Props {
 
 const STACK_TOP_MOBILE = 16;
 const STACK_STEP = 24;
+const MOBILE_PEEK = 130;
 const PANEL_H = 754;
-const COLLAPSED_PEEK = 24;
+const COLLAPSED_PEEK = 102;
 const CARD_H = 546;
 const MOBILE_CARD_H = 420;
 const CARD_GAP = 24;
@@ -102,15 +103,20 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
         return;
       }
       if (!context.conditions?.desktop) {
-        const list = cards[0]?.parentElement;
-        if (!list) return;
-        const sync = () => {
-          const index = Math.min(cards.length - 1, Math.floor((list.scrollTop + 1) / (MOBILE_CARD_H + CARD_GAP)));
-          activate(index);
-        };
-        list.addEventListener('scroll', sync, { passive: true });
-        sync();
-        return () => list.removeEventListener('scroll', sync);
+        // Картка активна, щойно доїхала до свого місця в sticky-стопці.
+        const syncStack = () => activate(pickActiveStep(
+          cards.map((card, index) => card.getBoundingClientRect().top - index * MOBILE_PEEK),
+          STACK_TOP_MOBILE + 1,
+        ));
+        ScrollTrigger.create({
+          trigger: track,
+          start: 'top bottom',
+          end: 'bottom top',
+          onUpdate: syncStack,
+          onRefresh: syncStack,
+        });
+        syncStack();
+        return;
       }
       // Висота панелі товарів лише резервує місце в документі. Вона не має
       // зсувати sticky-верх чи позиції карток, які вже стали на місце.
@@ -181,11 +187,6 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
   };
 
   const scrollToCard = (index: number) => {
-    if (!window.matchMedia(DESKTOP_QUERY).matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const list = cardRefs.current[0]?.parentElement;
-      list?.scrollTo({ top: index * (MOBILE_CARD_H + CARD_GAP), behavior: 'smooth' });
-      return;
-    }
     const trigger = scrollTriggerRef.current;
 
     if (trigger !== null) {
@@ -197,9 +198,10 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
 
     const node = anchorRefs.current[index];
     if (node === null || node === undefined) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const top = node.getBoundingClientRect().top + window.scrollY
-      - STACK_TOP_MOBILE - index * STACK_STEP;
-    window.scrollTo({ top, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+      - STACK_TOP_MOBILE - index * (reduce ? STACK_STEP : MOBILE_PEEK);
+    window.scrollTo({ top, behavior: reduce ? 'instant' : 'smooth' });
     setActiveIndex(index);
   };
 
@@ -239,6 +241,7 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
           '--track-height': `calc(var(--panel-height) + ${SCROLL_DISTANCE}px)`,
           '--sticky-top': `${STICKY_TOP}px`,
           '--mobile-card-height': `${MOBILE_CARD_H}px`,
+          '--stack-peek': `${MOBILE_PEEK}px`,
         } as CSSProperties}
       >
         <div className="steps-stage flex flex-col gap-10 lg:sticky lg:top-(--sticky-top) lg:min-h-(--panel-height) lg:flex-row
@@ -255,7 +258,9 @@ export function HowItWorks({ initialProducts, initialCategories, selectedCategor
                   }}
                   className="step-card-row sticky top-(--stack-top) lg:absolute lg:inset-x-0 lg:top-0 lg:h-(--card-height)"
                   style={{
-                    '--stack-top': `${STACK_TOP_MOBILE + index * STACK_STEP}px`,
+                    '--stack-top': `${STACK_TOP_MOBILE + index * MOBILE_PEEK}px`,
+                    '--stack-rest': STEPS.length - 1 - index,
+                    '--stack-offset': `${index * COLLAPSED_PEEK}px`,
                     '--card-height': `${CARD_H}px`,
                     '--initial-y': `${cardPosition(index, 0)}px`,
                     zIndex: index,

@@ -13,23 +13,23 @@ interface Props extends LoadMoreProps {
 
 export function CategoryTabs({ categories, activeId, onSelect, compact = false, ...pagination }: Props) {
   return (
-    <div className={`relative z-10 w-full shrink-0 ${compact ? 'pb-1' : 'pl-2.5 pb-3 lg:pl-0'}`}>
-      {/* Фон, обводка й тінь — на обгортці: скролер нижче має overflow-x,
-          а він робить скрольною й вертикаль і зрізав би тінь. Градієнтна
-          обводка через два фони, бо border-color градієнта не вміє. */}
-      <div className="w-fit max-w-full rounded-(--radius-pill-lg) shadow-soft
-                      border border-transparent
-                      [background:linear-gradient(var(--color-paper),var(--color-paper))_padding-box,linear-gradient(to_top,#f3f5f5,#f5fcfd)_border-box]">
-        <div data-scroll-root
-          className="relative w-full overflow-x-auto rounded-(--radius-pill-lg)
-                     overscroll-x-contain
-                     [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
+    <div className={`relative z-10 shrink-0 ${compact ? '-ml-3 pb-1' : '-ml-10 pb-3'}`}>
+      {/* Плашка прокручується цілою і заходить за край скролера, тож текст
+          обрізає край екрана чи панелі, а не її заокруглення. Поля скролера
+          лишають місце тіні; pointer-events-none пропускає кліки крізь них.
+          Градієнтна обводка через два фони, бо border-color градієнта не вміє. */}
+      <div data-scroll-root
+        className="pointer-events-none -my-6 overflow-x-auto overscroll-x-contain py-6
+                   [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <div className={`w-fit ${compact ? 'px-3' : 'pl-10 pr-2.5'}`}>
           <div
             role="group"
             aria-label="Product categories"
-            className={`flex w-fit items-center rounded-(--radius-pill-lg)
-                       ${compact ? 'gap-3 p-[3px]' : 'gap-6 p-1 lg:p-[3px]'}`}
+            className={`pointer-events-auto flex w-fit items-center rounded-(--radius-pill-lg) shadow-soft
+                       border border-transparent
+                       [background:linear-gradient(var(--color-paper),var(--color-paper))_padding-box,linear-gradient(to_top,#f3f5f5,#f5fcfd)_border-box]
+                       ${compact ? 'gap-3 p-[3px]' : 'gap-6 p-[3px]'}`}
           >
             {categories.map((category) => {
               const isActive = category.id === activeId;

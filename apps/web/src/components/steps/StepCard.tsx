@@ -20,7 +20,7 @@ export function StepCard({ step, isActive, onSelect, onShop }: Props) {
       className={`step-card relative mx-auto flex w-full flex-col md:max-w-[500px]
                   rounded-[32px] p-6 ring-1 ring-[#63cc96]/40
                   md:p-10 ${step.background}
-                  lg:h-[546px] lg:w-[500px] lg:shrink-0
+                  lg:h-full lg:w-[500px] lg:shrink-0
                   shadow-[1px_2px_4px_0px_#9CB6BA14,-8px_12px_12px_0px_#9CB6BA17,12px_20px_16px_0px_#9CB6BA17,8px_26px_14px_0px_#9CB6BA17,-20px_40px_30px_0px_#9CB6BA0F]`}
     >
       <button type="button" onClick={onSelect}
